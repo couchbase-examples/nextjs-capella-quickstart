@@ -8,7 +8,7 @@ type Props = {
   spec: Record<string, any>
 }
 
-function ReactSwagger({ spec }: Props) {
+function ReactSwagger({ spec }: Readonly<Props>) {
   // @ts-ignore - SwaggerUI is not typed
   return <SwaggerUI spec={spec} />
 }

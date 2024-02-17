@@ -1,19 +1,19 @@
 import { NextRequest, NextResponse } from "next/server"
+import { QueryResult } from "couchbase"
 
 import { getDatabase } from "@/lib/couchbase-connection"
 import { Airline } from "@/app/models/AirlineModel"
-import { QueryResult } from "couchbase"
 
 /**
  * @swagger
  * /api/airline/list:
  *   get:
- *     description: Get an airline by ID
+ *     description: Get all airlines
  *     responses:
  *       200:
- *        description: Returns the airline
- *       400:
- *        description: Failed to fetch airline
+ *         description: Successful response
+ *       500:
+ *         description: Failed to fetch airlines
  */
 export async function GET(
   req: NextRequest,
@@ -64,8 +64,7 @@ export async function GET(
 
     options = { parameters: { LIMIT: limit, OFFSET: offset } }
   }
-  await makeResponse(res, async () => {
-    const results: QueryResult = await scope.query(query, options)
-    return results["rows"]
-  })
+  
+  const results: QueryResult = await scope.query(query, options)
+  return results["rows"]
 }
