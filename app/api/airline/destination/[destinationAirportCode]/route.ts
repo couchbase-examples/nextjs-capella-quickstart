@@ -6,7 +6,7 @@ import { Airline } from "@/app/models/AirlineModel"
 
 /**
  * @swagger
- * /api/airline/{destinationAirportCode}:
+ * /api/airline/destination/{destinationAirportCode}:
  *   get:
  *     description: Get all airlines by destination airport
  *     parameters:
