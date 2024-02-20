@@ -4,31 +4,31 @@ import { getDatabase } from "@/lib/couchbase-connection"
 
 /**
  * @swagger
- * /api/airline/{airlineId}:
+ * /api/route/{routeId}:
  *   get:
- *     summary: Get an airline by ID
+ *     summary: Get a route by ID
  *     parameters:
- *       - name: airlineId
+ *       - name: routeId
  *         in: path
- *         description: ID of the airline
+ *         description: ID of the route
  *         required: true
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: Returns the airline
+ *         description: Returns the route
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Airline'
+ *               $ref: '#/components/schemas/Route'
  *       400:
- *         description: Failed to fetch airline
+ *         description: Failed to fetch route
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *       500:
- *         description: An error occurred while fetching airline
+ *         description: An error occurred while fetching route
  *         content:
  *           application/json:
  *             schema:
@@ -36,25 +36,25 @@ import { getDatabase } from "@/lib/couchbase-connection"
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { airlineId: string } }
+  { params }: { params: { routeId: string } }
 ) {
   try {
-    const { airlineId } = params
-    const { airlineCollection } = await getDatabase()
+    const { routeId } = params
+    const { routeCollection } = await getDatabase()
 
-    const airline = await airlineCollection.get(airlineId)
-    if (airline) {
-      return NextResponse.json(airline.content, { status: 200 })
+    const route = await routeCollection.get(routeId)
+    if (route) {
+      return NextResponse.json(route.content, { status: 200 })
     } else {
       return NextResponse.json(
-        { message: "Failed to fetch airline", error: "Airline not found" },
+        { message: "Failed to fetch route", error: "Route not found" },
         { status: 400 }
       )
     }
   } catch (error) {
     return NextResponse.json(
       {
-        message: "An error occurred while fetching airline",
+        message: "An error occurred while fetching route",
       },
       { status: 500 }
     )
@@ -63,30 +63,30 @@ export async function GET(
 
 /**
  * @swagger
- * /api/airline/{airlineId}:
+ * /api/route/{routeId}:
  *   post:
- *     summary: Create an airline
+ *     summary: Create a route
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Airline'
+ *             $ref: '#/components/schemas/Route'
  *     responses:
  *       201:
- *         description: Returns the created airline
+ *         description: Returns the created route
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Airline'
+ *               $ref: '#/components/schemas/Route'
  *       400:
- *         description: Failed to create airline
+ *         description: Failed to create route
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *       500:
- *         description: An error occurred while creating airline
+ *         description: An error occurred while creating route
  *         content:
  *           application/json:
  *             schema:
@@ -94,24 +94,21 @@ export async function GET(
  */
 export async function POST(
   req: NextRequest,
-  { params }: { params: { airlineId: string } }
+  { params }: { params: { routeId: string } }
 ) {
   try {
-    const { airlineId } = params
-    const airlineData = req.body
-    const { airlineCollection } = await getDatabase()
+    const { routeId } = params
+    const routeData = req.body
+    const { routeCollection } = await getDatabase()
 
-    const createdAirline = await airlineCollection.insert(
-      airlineId,
-      airlineData
-    )
-    if (createdAirline) {
-      return NextResponse.json(createdAirline, { status: 201 })
+    const createdRoute = await routeCollection.insert(routeId, routeData)
+    if (createdRoute) {
+      return NextResponse.json(createdRoute, { status: 201 })
     } else {
       return NextResponse.json(
         {
-          message: "Failed to create airline",
-          error: "Airline could not be created",
+          message: "Failed to create route",
+          error: "Route could not be created",
         },
         { status: 400 }
       )
@@ -119,7 +116,7 @@ export async function POST(
   } catch (error) {
     return NextResponse.json(
       {
-        message: "An error occurred while creating airline",
+        message: "An error occurred while creating route",
       },
       { status: 500 }
     )
@@ -128,30 +125,30 @@ export async function POST(
 
 /**
  * @swagger
- * /api/airline/{airlineId}:
+ * /api/route/{routeId}:
  *   put:
- *     summary: Update an airline
+ *     summary: Update a route
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Airline'
+ *             $ref: '#/components/schemas/Route'
  *     responses:
  *       200:
- *         description: Returns the updated airline
+ *         description: Returns the updated route
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Airline'
+ *               $ref: '#/components/schemas/Route'
  *       400:
- *         description: Failed to update airline
+ *         description: Failed to update route
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *       500:
- *         description: An error occurred while updating airline
+ *         description: An error occurred while updating route
  *         content:
  *           application/json:
  *             schema:
@@ -159,24 +156,21 @@ export async function POST(
  */
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { airlineId: string } }
+  { params }: { params: { routeId: string } }
 ) {
   try {
-    const { airlineId } = params
-    const airlineData = req.body
-    const { airlineCollection } = await getDatabase()
+    const { routeId } = params
+    const routeData = req.body
+    const { routeCollection } = await getDatabase()
 
-    const updatedAirline = await airlineCollection.replace(
-      airlineId,
-      airlineData
-    )
-    if (updatedAirline) {
-      return NextResponse.json(updatedAirline, { status: 200 })
+    const updatedRoute = await routeCollection.replace(routeId, routeData)
+    if (updatedRoute) {
+      return NextResponse.json(updatedRoute, { status: 200 })
     } else {
       return NextResponse.json(
         {
-          message: "Failed to update airline",
-          error: "Airline could not be updated",
+          message: "Failed to update route",
+          error: "Route could not be updated",
         },
         { status: 400 }
       )
@@ -184,7 +178,7 @@ export async function PUT(
   } catch (error) {
     return NextResponse.json(
       {
-        message: "An error occurred while updating airline",
+        message: "An error occurred while updating route",
       },
       { status: 500 }
     )
@@ -193,20 +187,20 @@ export async function PUT(
 
 /**
  * @swagger
- * /api/airline/{airlineId}:
+ * /api/route/{routeId}:
  *   delete:
- *     summary: Delete an airline
+ *     summary: Delete a route
  *     responses:
  *       204:
- *         description: Successfully deleted the airline
+ *         description: Successfully deleted the route
  *       400:
- *         description: Failed to delete airline
+ *         description: Failed to delete route
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *       500:
- *         description: An error occurred while deleting airline
+ *         description: An error occurred while deleting route
  *         content:
  *           application/json:
  *             schema:
@@ -214,23 +208,23 @@ export async function PUT(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { airlineId: string } }
+  { params }: { params: { routeId: string } }
 ) {
   try {
-    const { airlineId } = params
-    const { airlineCollection } = await getDatabase()
+    const { routeId } = params
+    const { routeCollection } = await getDatabase()
 
-    const deletedAirline = await airlineCollection.remove(airlineId)
-    if (deletedAirline) {
+    const deletedRoute = await routeCollection.remove(routeId)
+    if (deletedRoute) {
       return NextResponse.json(
-        { message: "Successfully deleted airline" },
+        { message: "Successfully deleted route" },
         { status: 204 }
       )
     } else {
       return NextResponse.json(
         {
-          message: "Failed to delete airline",
-          error: "Airline could not be deleted",
+          message: "Failed to delete route",
+          error: "Route could not be deleted",
         },
         { status: 400 }
       )
@@ -238,7 +232,7 @@ export async function DELETE(
   } catch (error) {
     return NextResponse.json(
       {
-        message: "An error occurred while deleting airline",
+        message: "An error occurred while deleting route",
       },
       { status: 500 }
     )
