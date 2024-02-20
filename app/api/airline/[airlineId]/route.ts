@@ -4,11 +4,11 @@ import { getDatabase } from "@/lib/couchbase-connection"
 
 /**
  * @swagger
- * /api/airline/{id}:
+ * /api/airline/{airlineId}:
  *   get:
  *     description: Get an airline by ID
  *     parameters:
- *       - name: id
+ *       - name: airlineId
  *         in: path
  *         description: ID of the airline
  *         required: true
@@ -22,15 +22,15 @@ import { getDatabase } from "@/lib/couchbase-connection"
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { airlineId: string } }
 ) {
   try {
-    const { id } = params
+    const { airlineId } = params
     // Fetch the airline from your data source
     // This is just a placeholder and should be replaced with your actual data fetching logic
     const { airlineCollection } = await getDatabase()
 
-    const airline = await airlineCollection.get(id)
+    const airline = await airlineCollection.get(airlineId)
     if (airline) {
       return NextResponse.json(airline.content, { status: 200 })
     } else {
@@ -49,7 +49,7 @@ export async function GET(
 
 /**
  * @swagger
- * /api/airline/{id}:
+ * /api/airline/{airlineId}:
  *   post:
  *     description: Create an airline
  *     responses:
@@ -58,14 +58,14 @@ export async function GET(
  */
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { airlineId: string } }
 ) {
-  const { id } = params
+  const { airlineId } = params
   const airline = req.body
   // Create the airline in your data source
   // This is just a placeholder and should be replaced with your actual data creation logic
   const { airlineCollection } = await getDatabase()
-  const createdAirline = await airlineCollection.insert(id, airline)
+  const createdAirline = await airlineCollection.insert(airlineId, airline)
   if (createdAirline) {
     return NextResponse.json(createdAirline, { status: 201 })
   } else {
@@ -77,7 +77,7 @@ export async function POST(
 }
 /**
  * @swagger
- * /api/airline/{id}:
+ * /api/airline/{airlineId}:
  *   put:
  *     description: Update an airline
  *     responses:
@@ -86,14 +86,14 @@ export async function POST(
  */
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { airlineId: string } }
 ) {
-  const { id } = params
+  const { airlineId } = params
   const airline = req.body
   // Update the airline in your data source
   // This is just a placeholder and should be replaced with your actual data updating logic
   const { airlineCollection } = await getDatabase()
-  const updatedAirline = await airlineCollection.replace(id, airline)
+  const updatedAirline = await airlineCollection.replace(airlineId, airline)
   if (updatedAirline) {
     return NextResponse.json(updatedAirline, { status: 200 })
   } else {
@@ -106,7 +106,7 @@ export async function PUT(
 
 /**
  * @swagger
- * /api/airline/{id}:
+ * /api/airline/{airlineId}:
  *   delete:
  *     description: Delete an airline
  *     responses:
@@ -115,13 +115,13 @@ export async function PUT(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { airlineId: string } }
 ) {
-  const { id } = params
+  const { airlineId } = params
   // Delete the airline from your data source
   // This is just a placeholder and should be replaced with your actual data deletion logic
   const { airlineCollection } = await getDatabase()
-  const deletedAirline = await airlineCollection.remove(id)
+  const deletedAirline = await airlineCollection.remove(airlineId)
   if (deletedAirline) {
     return NextResponse.json(deletedAirline, { status: 204 })
   } else {
