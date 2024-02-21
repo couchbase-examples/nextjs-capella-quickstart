@@ -7,6 +7,9 @@ const nextConfig = {
     "swagger-client",
     "swagger-ui-react",
   ],
+  experimental: {
+    serverComponentsExternalPackages: ["couchbase"],
+  },
 }
 
 export default nextConfig
