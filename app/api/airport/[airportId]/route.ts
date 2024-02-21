@@ -6,27 +6,28 @@ import { getDatabase } from "@/lib/couchbase-connection"
  * @swagger
  * /api/airport/{airportId}:
  *   get:
- *     summary: Get airport route
+ *     summary: Get an airport by ID
  *     parameters:
- *       - in: path
- *         name: airportId
+ *       - name: airportId
+ *         in: path
+ *         description: ID of the airport
  *         required: true
  *         schema:
  *           type: string
  *     responses:
- *       '200':
- *         description: Successful response with airport data
+ *       200:
+ *         description: Returns the airport
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Airport'
- *       '400':
+ *       400:
  *         description: Failed to fetch airport
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *       '500':
+ *       500:
  *         description: An error occurred while fetching airport
  *         content:
  *           application/json:
@@ -46,13 +47,15 @@ export async function GET(
       return NextResponse.json(airport.content, { status: 200 })
     } else {
       return NextResponse.json(
-        { message: "Failed to fetch airport" },
+        { message: "Failed to fetch airport", error: "Airport not found" },
         { status: 400 }
       )
     }
   } catch (error) {
     return NextResponse.json(
-      { message: "An error occurred while fetching airport" },
+      {
+        message: "An error occurred while fetching airport",
+      },
       { status: 500 }
     )
   }
@@ -62,13 +65,7 @@ export async function GET(
  * @swagger
  * /api/airport/{airportId}:
  *   post:
- *     summary: Create airport route
- *     parameters:
- *       - in: path
- *         name: airportId
- *         required: true
- *         schema:
- *           type: string
+ *     summary: Create an airport
  *     requestBody:
  *       required: true
  *       content:
@@ -76,19 +73,19 @@ export async function GET(
  *           schema:
  *             $ref: '#/components/schemas/Airport'
  *     responses:
- *       '201':
- *         description: Successful response with created airport
+ *       201:
+ *         description: Returns the created airport
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Airport'
- *       '400':
+ *       400:
  *         description: Failed to create airport
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *       '500':
+ *       500:
  *         description: An error occurred while creating airport
  *         content:
  *           application/json:
@@ -101,8 +98,7 @@ export async function POST(
 ) {
   try {
     const { airportId } = params
-
-    const airportData = req.body
+    const airportData = await req.json()
     const { airportCollection } = await getDatabase()
 
     const createdAirport = await airportCollection.insert(
@@ -110,16 +106,30 @@ export async function POST(
       airportData
     )
     if (createdAirport) {
-      return NextResponse.json(createdAirport, { status: 201 })
+      return NextResponse.json(
+        {
+          airportId: airportId,
+          airportData: airportData,
+          createdAirport: createdAirport,
+        },
+        {
+          status: 201,
+        }
+      )
     } else {
       return NextResponse.json(
-        { message: "Failed to create airport" },
+        {
+          message: "Failed to create airport",
+          error: "Airport could not be created",
+        },
         { status: 400 }
       )
     }
   } catch (error) {
     return NextResponse.json(
-      { message: "An error occurred while creating airport" },
+      {
+        message: "An error occurred while creating airport",
+      },
       { status: 500 }
     )
   }
@@ -127,15 +137,9 @@ export async function POST(
 
 /**
  * @swagger
- * /api/airport/{airportId}/route:
+ * /api/airport/{airportId}:
  *   put:
- *     summary: Update airport route
- *     parameters:
- *       - in: path
- *         name: airportId
- *         required: true
- *         schema:
- *           type: string
+ *     summary: Update an airport
  *     requestBody:
  *       required: true
  *       content:
@@ -143,19 +147,19 @@ export async function POST(
  *           schema:
  *             $ref: '#/components/schemas/Airport'
  *     responses:
- *       '200':
- *         description: Successful response with updated airport
+ *       200:
+ *         description: Returns the updated airport
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Airport'
- *       '400':
+ *       400:
  *         description: Failed to update airport
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *       '500':
+ *       500:
  *         description: An error occurred while updating airport
  *         content:
  *           application/json:
@@ -168,24 +172,33 @@ export async function PUT(
 ) {
   try {
     const { airportId } = params
-    const airportData = req.body
+    const airportData = await req.json()
     const { airportCollection } = await getDatabase()
 
-    const updatedAirport = await airportCollection.replace(
+    const updatedAirport = await airportCollection.upsert(
       airportId,
       airportData
     )
     if (updatedAirport) {
-      return NextResponse.json(updatedAirport, { status: 200 })
+      return NextResponse.json(
+        {
+          airportId: airportId,
+          airportData: airportData,
+          updatedAirport: updatedAirport,
+        },
+        { status: 200 }
+      )
     } else {
       return NextResponse.json(
-        { message: "Failed to update airport" },
+        { message: "Failed to update airport", error: "Airport not found" },
         { status: 400 }
       )
     }
   } catch (error) {
     return NextResponse.json(
-      { message: "An error occurred while updating airport" },
+      {
+        message: "An error occurred while updating airport",
+      },
       { status: 500 }
     )
   }
@@ -193,29 +206,19 @@ export async function PUT(
 
 /**
  * @swagger
- * /api/airport/{airportId}/route:
+ * /api/airport/{airportId}:
  *   delete:
- *     summary: Delete airport route
- *     parameters:
- *       - in: path
- *         name: airportId
- *         required: true
- *         schema:
- *           type: string
+ *     summary: Delete an airport
  *     responses:
- *       '200':
- *         description: Successful response with deleted airport
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Airport'
- *       '400':
+ *       204:
+ *         description: Successfully deleted the airport
+ *       400:
  *         description: Failed to delete airport
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *       '500':
+ *       500:
  *         description: An error occurred while deleting airport
  *         content:
  *           application/json:
@@ -232,16 +235,24 @@ export async function DELETE(
 
     const deletedAirport = await airportCollection.remove(airportId)
     if (deletedAirport) {
-      return NextResponse.json(deletedAirport, { status: 200 })
+      return NextResponse.json(
+        { message: "Successfully deleted airport" },
+        { status: 204 }
+      )
     } else {
       return NextResponse.json(
-        { message: "Failed to delete airport" },
+        {
+          message: "Failed to delete airport",
+          error: "Airport could not be deleted",
+        },
         { status: 400 }
       )
     }
   } catch (error) {
     return NextResponse.json(
-      { message: "An error occurred while deleting airport" },
+      {
+        message: "An error occurred while deleting airport",
+      },
       { status: 500 }
     )
   }

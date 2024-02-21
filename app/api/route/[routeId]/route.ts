@@ -98,12 +98,21 @@ export async function POST(
 ) {
   try {
     const { routeId } = params
-    const routeData = req.body
+    const routeData = await req.json()
     const { routeCollection } = await getDatabase()
 
     const createdRoute = await routeCollection.insert(routeId, routeData)
     if (createdRoute) {
-      return NextResponse.json(createdRoute, { status: 201 })
+      return NextResponse.json(
+        {
+          routeId: routeId,
+          routeData: routeData,
+          createdRoute: createdRoute,
+        },
+        {
+          status: 201,
+        }
+      )
     } else {
       return NextResponse.json(
         {
@@ -160,18 +169,22 @@ export async function PUT(
 ) {
   try {
     const { routeId } = params
-    const routeData = req.body
+    const routeData = await req.json()
     const { routeCollection } = await getDatabase()
 
-    const updatedRoute = await routeCollection.replace(routeId, routeData)
+    const updatedRoute = await routeCollection.upsert(routeId, routeData)
     if (updatedRoute) {
-      return NextResponse.json(updatedRoute, { status: 200 })
-    } else {
       return NextResponse.json(
         {
-          message: "Failed to update route",
-          error: "Route could not be updated",
+          routeId: routeId,
+          routeData: routeData,
+          updatedRoute: updatedRoute,
         },
+        { status: 200 }
+      )
+    } else {
+      return NextResponse.json(
+        { message: "Failed to update route", error: "Route not found" },
         { status: 400 }
       )
     }

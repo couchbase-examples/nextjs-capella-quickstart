@@ -13,7 +13,7 @@ import { Airline } from "@/app/models/AirlineModel"
  *       - name: country
  *         in: query
  *         description: Country of the airline
- *         required: false
+ *         required: true
  *         schema:
  *           type: string
  *       - name: limit
@@ -22,17 +22,29 @@ import { Airline } from "@/app/models/AirlineModel"
  *         required: false
  *         schema:
  *           type: integer
+ *           default: 10
  *       - name: offset
  *         in: query
- *         description: Number of results to skip
+ *         description: Number of results to skip for pagination
  *         required: false
  *         schema:
  *           type: integer
+ *           default: 0
  *     responses:
  *       200:
- *         description: Successful response
+ *         description: A list of airlines from the specified country
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Airline'
  *       500:
- *         description: Failed to fetch airlines
+ *         description: An error occurred while fetching airlines
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 export async function GET(
   req: NextRequest,
@@ -40,9 +52,11 @@ export async function GET(
 ) {
   try {
     const { scope } = await getDatabase()
-    // Fetching parameters
-    const { country }: Partial<Airline> = params
-    const { limit, offset } = await req.json()
+    const country = params.country
+    const limit = req.nextUrl.searchParams.get("limit") ?? 10
+    const offset = req.nextUrl.searchParams.get("offset") ?? 0
+
+    console.log("country", country, "limit", limit, "offset", offset)
 
     let query: string
     type QueryOptions = {
@@ -52,45 +66,39 @@ export async function GET(
         OFFSET: number
       }
     }
-    let options: QueryOptions
-    if (country !== "") {
-      query = `
-          SELECT airline.callsign,
-                 airline.country,
-                 airline.iata,
-                 airline.icao,
-                 airline.name
-          FROM airline AS airline
-          WHERE airline.country = $COUNTRY
-          ORDER BY airline.name
-          LIMIT $LIMIT
-          OFFSET $OFFSET;
-        `
-      options = {
-        parameters: { COUNTRY: country, LIMIT: limit, OFFSET: offset },
-      }
-    } else {
-      query = `
-          SELECT airline.callsign,
-                 airline.country,
-                 airline.iata,
-                 airline.icao,
-                 airline.name
-          FROM airline AS airline
-          ORDER BY airline.name
-          LIMIT $LIMIT
-          OFFSET $OFFSET;
-        `
 
-      options = { parameters: { LIMIT: limit, OFFSET: offset } }
+    let options: QueryOptions
+
+    query = `
+        SELECT air.callsign,
+               air.country,
+               air.iata,
+               air.icao,
+               air.id,
+               air.name,
+               air.type
+        FROM airline AS air
+        WHERE air.country = $COUNTRY
+        LIMIT $LIMIT OFFSET $OFFSET
+      `
+
+    options = {
+      parameters: {
+        COUNTRY: country,
+        LIMIT: Number(limit),
+        OFFSET: Number(offset),
+      },
     }
 
     const result: QueryResult = await scope.query(query, options)
-    const airlines: Airline[] = result.rows.map((row) => row.airline)
-    return NextResponse.json({ airlines }, { status: 200 })
+    const airlines: Airline[] = result.rows
+
+    return NextResponse.json(airlines, { status: 200 })
   } catch (error) {
     return NextResponse.json(
-      { message: "Failed to fetch airlines" },
+      {
+        message: "An error occurred while fetching airlines",
+      },
       { status: 500 }
     )
   }

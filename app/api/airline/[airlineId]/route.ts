@@ -98,7 +98,7 @@ export async function POST(
 ) {
   try {
     const { airlineId } = params
-    const airlineData = req.body
+    const airlineData = await req.json()
     const { airlineCollection } = await getDatabase()
 
     const createdAirline = await airlineCollection.insert(
@@ -106,7 +106,16 @@ export async function POST(
       airlineData
     )
     if (createdAirline) {
-      return NextResponse.json(createdAirline, { status: 201 })
+      return NextResponse.json(
+        {
+          airlineId: airlineId,
+          airlineData: airlineData,
+          createdAirline: createdAirline,
+        },
+        {
+          status: 201,
+        }
+      )
     } else {
       return NextResponse.json(
         {
@@ -163,21 +172,25 @@ export async function PUT(
 ) {
   try {
     const { airlineId } = params
-    const airlineData = req.body
+    const airlineData = await req.json()
     const { airlineCollection } = await getDatabase()
 
-    const updatedAirline = await airlineCollection.replace(
+    const updatedAirline = await airlineCollection.upsert(
       airlineId,
       airlineData
     )
     if (updatedAirline) {
-      return NextResponse.json(updatedAirline, { status: 200 })
-    } else {
       return NextResponse.json(
         {
-          message: "Failed to update airline",
-          error: "Airline could not be updated",
+          airlineId: airlineId,
+          airlineData: airlineData,
+          updatedAirline: updatedAirline,
         },
+        { status: 200 }
+      )
+    } else {
+      return NextResponse.json(
+        { message: "Failed to update airline", error: "Airline not found" },
         { status: 400 }
       )
     }

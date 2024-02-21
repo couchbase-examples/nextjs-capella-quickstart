@@ -8,11 +8,11 @@ import { Airline } from "@/app/models/AirlineModel"
  * @swagger
  * /api/airline/destination/{destinationAirportCode}:
  *   get:
- *     description: Get all airlines by destination airport
+ *     description: Get all airlines flying to a specific destination airport
  *     parameters:
- *       - name: airport
- *         in: query
- *         description: Destination airport code
+ *       - name: destinationAirportCode
+ *         in: path
+ *         description: The ICAO or IATA code of the destination airport
  *         required: true
  *         schema:
  *           type: string
@@ -22,17 +22,29 @@ import { Airline } from "@/app/models/AirlineModel"
  *         required: false
  *         schema:
  *           type: integer
+ *           default: 10
  *       - name: offset
  *         in: query
- *         description: Number of results to skip
+ *         description: Number of results to skip for pagination
  *         required: false
  *         schema:
  *           type: integer
+ *           default: 0
  *     responses:
  *       200:
- *         description: Successful response
+ *         description: A list of airlines flying to the specified destination airport
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Airline'
  *       500:
- *         description: Failed to fetch airlines
+ *         description: An error occurred while fetching airlines
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 export async function GET(
   req: NextRequest,
@@ -40,9 +52,10 @@ export async function GET(
 ) {
   try {
     const { scope } = await getDatabase()
-    // Fetching parameters
+
     const { destinationAirportCode } = params
-    const { limit, offset } = await req.json()
+    const limit = req.nextUrl.searchParams.get("limit") ?? 10
+    const offset = req.nextUrl.searchParams.get("offset") ?? 0
 
     let query: string
     type QueryOptions = {
@@ -76,13 +89,13 @@ export async function GET(
     options = {
       parameters: {
         AIRPORT: destinationAirportCode,
-        LIMIT: limit,
-        OFFSET: offset,
+        LIMIT: Number(limit),
+        OFFSET: Number(offset),
       },
     }
 
     const result: QueryResult = await scope.query(query, options)
-    const airlines: Airline[] = result.rows.map((row) => row.airline)
+    const airlines: Airline[] = result.rows
 
     return NextResponse.json(airlines, { status: 200 })
   } catch (error) {

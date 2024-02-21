@@ -4,7 +4,9 @@ type Airline = {
   country: string
   iata?: string
   icao: string
+  id: number
   name: string
+  type: string
 }
 
 export type { Airline }
