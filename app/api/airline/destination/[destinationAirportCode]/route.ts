@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { QueryResult } from "couchbase"
 
-import { getDatabase } from "@/lib/couchbase-connection"
-import { Airline } from "@/app/models/AirlineModel"
+import { getDatabase } from "../../../../../lib/couchbase-connection"
+import { Airline } from "../../../../models/AirlineModel"
 
 /**
  * @swagger
@@ -51,8 +51,9 @@ export async function GET(
   { params }: { params: { destinationAirportCode: string } }
 ) {
   try {
+    
     const { scope } = await getDatabase()
-
+    
     const { destinationAirportCode } = params
     const limit = req.nextUrl.searchParams.get("limit") ?? 10
     const offset = req.nextUrl.searchParams.get("offset") ?? 0
@@ -96,7 +97,6 @@ export async function GET(
 
     const result: QueryResult = await scope.query(query, options)
     const airlines: Airline[] = result.rows
-
     return NextResponse.json(airlines, { status: 200 })
   } catch (error) {
     return NextResponse.json(
