@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 
-import { getDatabase } from "../../../../../lib/couchbase-connection"
+import { getDatabase } from "@/lib/couchbase-connection"
 
 /**
  * @swagger
