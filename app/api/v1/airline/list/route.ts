@@ -58,8 +58,6 @@ export async function GET(
     const limit = req.nextUrl.searchParams.get("limit") ?? 10
     const offset = req.nextUrl.searchParams.get("offset") ?? 0
 
-    console.log("country", country, "limit", limit, "offset", offset)
-
     let query: string
     type QueryOptions = {
       parameters: {
