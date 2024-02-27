@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { QueryResult } from "couchbase"
 
-import { getDatabase } from "@/lib/couchbase-connection"
-import { Airline } from "@/app/models/AirlineModel"
+import { getDatabase } from "../../../../../lib/couchbase-connection"
+import { Airline } from "../../../../models/AirlineModel"
 
 /**
  * @swagger
@@ -11,7 +11,7 @@ import { Airline } from "@/app/models/AirlineModel"
  *     description: Get all airlines by country
  *     parameters:
  *       - name: country
- *         in: query
+ *         in: path
  *         description: Country of the airline
  *         required: true
  *         schema:
