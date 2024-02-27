@@ -6,14 +6,17 @@ import { Airline } from "../../../../models/AirlineModel"
 
 /**
  * @swagger
- * /api/airline/list/{country}:
+ * /api/v1/airline/list:
  *   get:
+ *     summary: Get all airlines by country
  *     description: Get all airlines by country
+ *     tags:
+ *       - Airline
  *     parameters:
  *       - name: country
- *         in: path
+ *         in: query
  *         description: Country of the airline
- *         required: true
+ *         required: false
  *         schema:
  *           type: string
  *       - name: limit
@@ -48,11 +51,10 @@ import { Airline } from "../../../../models/AirlineModel"
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { country: string } }
 ) {
   try {
     const { scope } = await getDatabase()
-    const country = params.country
+    const country = req.nextUrl.searchParams.get("country") ?? ""
     const limit = req.nextUrl.searchParams.get("limit") ?? 10
     const offset = req.nextUrl.searchParams.get("offset") ?? 0
 
@@ -69,7 +71,26 @@ export async function GET(
 
     let options: QueryOptions
 
-    query = `
+    if (country === "") {
+      query = `
+        SELECT air.callsign,
+               air.country,
+               air.iata,
+               air.icao,
+               air.id,
+               air.name,
+               air.type
+        FROM airline AS air
+        LIMIT $LIMIT OFFSET $OFFSET
+      `
+      options = {
+        parameters: {
+          LIMIT: Number(limit),
+          OFFSET: Number(offset),
+        },
+      }
+    } else {
+      query = `
         SELECT air.callsign,
                air.country,
                air.iata,
@@ -81,13 +102,13 @@ export async function GET(
         WHERE air.country = $COUNTRY
         LIMIT $LIMIT OFFSET $OFFSET
       `
-
-    options = {
-      parameters: {
-        COUNTRY: country,
-        LIMIT: Number(limit),
-        OFFSET: Number(offset),
-      },
+      options = {
+        parameters: {
+          COUNTRY: country,
+          LIMIT: Number(limit),
+          OFFSET: Number(offset),
+        },
+      }
     }
 
     const result: QueryResult = await scope.query(query, options)

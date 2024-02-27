@@ -7,6 +7,9 @@ import { getDatabase } from "@/lib/couchbase-connection"
  * /api/airport/{airportId}:
  *   get:
  *     summary: Get an airport by ID
+ *     description: Get an airport by ID
+ *     tags:
+ *       - Airport
  *     parameters:
  *       - name: airportId
  *         in: path
@@ -66,6 +69,9 @@ export async function GET(
  * /api/airport/{airportId}:
  *   post:
  *     summary: Create an airport
+ *     description: Create an airport
+ *     tags:
+ *       - Airport
  *     requestBody:
  *       required: true
  *       content:
@@ -140,6 +146,9 @@ export async function POST(
  * /api/airport/{airportId}:
  *   put:
  *     summary: Update an airport
+ *     description: Update an airport
+ *     tags:
+ *       - Airport
  *     requestBody:
  *       required: true
  *       content:
@@ -209,6 +218,9 @@ export async function PUT(
  * /api/airport/{airportId}:
  *   delete:
  *     summary: Delete an airport
+ *     description: Delete an airport
+ *     tags:
+ *        - Airport
  *     responses:
  *       204:
  *         description: Successfully deleted the airport

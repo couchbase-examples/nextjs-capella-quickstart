@@ -4,9 +4,12 @@ import { getDatabase } from "@/lib/couchbase-connection"
 
 /**
  * @swagger
- * /api/route/{routeId}:
+ * /api/v1/route/{routeId}:
  *   get:
  *     summary: Get a route by ID
+ *     description: Get a route by ID
+ *     tags:
+ *       - Route
  *     parameters:
  *       - name: routeId
  *         in: path
@@ -63,9 +66,12 @@ export async function GET(
 
 /**
  * @swagger
- * /api/route/{routeId}:
+ * /api/v1/route/{routeId}:
  *   post:
  *     summary: Create a route
+ *     description: Create a route
+ *     tags:
+ *       - Route
  *     requestBody:
  *       required: true
  *       content:
@@ -134,9 +140,12 @@ export async function POST(
 
 /**
  * @swagger
- * /api/route/{routeId}:
+ * /api/v1/route/{routeId}:
  *   put:
  *     summary: Update a route
+ *     description: Update a route
+ *     tags:
+ *       - Route
  *     requestBody:
  *       required: true
  *       content:
@@ -200,9 +209,12 @@ export async function PUT(
 
 /**
  * @swagger
- * /api/route/{routeId}:
+ * /api/v1/route/{routeId}:
  *   delete:
  *     summary: Delete a route
+ *     description: Delete a route
+ *     tags:
+ *       - Route
  *     responses:
  *       204:
  *         description: Successfully deleted the route

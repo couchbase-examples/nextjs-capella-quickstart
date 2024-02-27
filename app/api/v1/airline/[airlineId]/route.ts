@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server"
 
-import { getDatabase } from "../../../../lib/couchbase-connection"
+import { getDatabase } from "../../../../../lib/couchbase-connection"
 
 /**
  * @swagger
- * /api/airline/{airlineId}:
+ * /api/v1/airline/{airlineId}:
  *   get:
  *     summary: Get an airline by ID
+ *     description: Get an airline by ID
+ *     tags:
+ *        - Airline
  *     parameters:
  *       - name: airlineId
  *         in: path
@@ -63,9 +66,12 @@ export async function GET(
 
 /**
  * @swagger
- * /api/airline/{airlineId}:
+ * /api/v1/airline/{airlineId}:
  *   post:
  *     summary: Create an airline
+ *     description: Get an airline by ID
+ *     tags:
+ *        - Airline
  *     requestBody:
  *       required: true
  *       content:
@@ -137,9 +143,12 @@ export async function POST(
 
 /**
  * @swagger
- * /api/airline/{airlineId}:
+ * /api/v1/airline/{airlineId}:
  *   put:
  *     summary: Update an airline
+ *     description: Get an airline by ID
+ *     tags:
+ *        - Airline
  *     requestBody:
  *       required: true
  *       content:
@@ -206,9 +215,12 @@ export async function PUT(
 
 /**
  * @swagger
- * /api/airline/{airlineId}:
+ * /api/v1/airline/{airlineId}:
  *   delete:
  *     summary: Delete an airline
+ *     description: Get an airline by ID
+ *     tags:
+ *        - Airline
  *     responses:
  *       204:
  *         description: Successfully deleted the airline

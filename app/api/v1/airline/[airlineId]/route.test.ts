@@ -3,7 +3,7 @@ import { afterAll, afterEach, beforeEach, describe, expect, it } from "vitest"
 
 import { Airline } from "@/app/models/AirlineModel"
 
-import { getDatabase } from "../../../../lib/couchbase-connection"
+import { getDatabase } from "../../../../../lib/couchbase-connection"
 import {
   DELETE as deleteHandler,
   GET as getHandler,
