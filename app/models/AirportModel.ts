@@ -7,13 +7,15 @@ type Geo = {
 
 // Airport document model
 type Airport = {
+  id: number
+  type: string
   airportname?: string
   city: string
   country: string
   faa: string
-  geo?: Geo
   icao?: string
   tz?: string
+  geo?: Geo
 }
 
 export type { Airport }

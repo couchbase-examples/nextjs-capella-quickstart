@@ -100,10 +100,10 @@ describe("PUT /api/v1/airline/{id}", () => {
     id: 11,
     type: "airline",
     name: "40-Mile Air",
-    iata: "Q5",
-    icao: "MLA",
+    iata: "U5",
+    icao: "UPD",
     callsign: "MILE-AIR",
-    country: "United States",
+    country: "Updated States",
   }
 
   it("should respond with status code 200 OK and return updated airline as object", async () => {
@@ -128,16 +128,14 @@ describe("DELETE /api/v1/airline/{id}", () => {
   const id = "airline_delete"
 
   // Insert airline before running tests
-  beforeEach(async () => {
-    await insertAirline(id, {
-      id: 11,
-      type: "airline",
-      name: "40-Mile Air",
-      iata: "Q5",
-      icao: "MLA",
-      callsign: "MILE-AIR",
-      country: "United States",
-    })
+  insertAirline(id, {
+    id: 11,
+    type: "airline",
+    name: "40-Mile Air",
+    iata: "Q5",
+    icao: "MLA",
+    callsign: "MILE-AIR",
+    country: "United States",
   })
 
   it("should respond with status code 204 No Content", async () => {
