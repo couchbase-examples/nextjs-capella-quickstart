@@ -1,12 +1,13 @@
-// Schedule document model
+
 type Schedule = {
   day: number
   flight: string
   utc: string
 }
 
-// Route document model
 type Route = {
+  id: number
+  type: string
   airline?: string
   airlineid?: string
   sourceairport?: string

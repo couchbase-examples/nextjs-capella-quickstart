@@ -54,26 +54,28 @@ describe('GET /api/v1/airport/{id}', () => {
 
 describe('POST /api/v1/airport/{id}', () => {
 
+  const airportId = 'airport_post';
+  const newAirport: Airport = {
+    id: 999,
+    type: "test-airport",
+    airportname: "Test Airport",
+    city: "Test City",
+    country: "Test Country",
+    faa: "",
+    icao: "Test LFAG",
+    tz: "Test Europe/Paris",
+    geo: {
+      lat: 49.868547,
+      lon: 3.029578,
+      alt: 295.0
+    } as Airport['geo']
+  };
+
   it('POST: should create an airport and return it', async () => {
-    const airportId = 'airport_post';
-    const airportData = {
-      id: 999,
-      type: "test-airport",
-      airportname: "Test Airport",
-      city: "Test City",
-      country: "Test Country",
-      faa: "",
-      icao: "Test LFAG",
-      tz: "Test Europe/Paris",
-      geo: {
-        lat: 49.868547,
-        lon: 3.029578,
-        alt: 295.0
-      }
-    };
+
 
     const response = await postHandler({
-      json: async () => airportData,
+      json: async () => newAirport,
     } as NextRequest, { params: { airportId } });
 
     expect(response.status).toBe(201);
@@ -81,28 +83,28 @@ describe('POST /api/v1/airport/{id}', () => {
 
     const createdAirport = await response.json();
     expect(createdAirport.airportId).toBe(airportId);
-    expect(createdAirport.airportData).toEqual(airportData);
+    expect(createdAirport.airportData).toEqual(newAirport);
 
     // cleanup
     afterEach(async () => {
-      const { airportCollection } = await getDatabase();
-      await airportCollection.remove(airportId);
+      await cleanupAirport(airportId);
     });
   });
 
 });
 
 describe('PUT /api/v1/airport/{id}', () => {
+  const id = 'airport_put';
 
   beforeEach(async () => {
-    await insertAirport('airport_put', {
+    await insertAirport(id, {
       id: 999,
       type: "test-airport",
       airportname: "Test Airport",
       city: "Test City",
       country: "Test Country",
-      faa: "",
-      icao: "Test LFAG",
+      faa: "ABC",
+      icao: "TEST",
       tz: "Test Europe/Paris",
       geo: {
         lat: 49.868547,
@@ -112,23 +114,23 @@ describe('PUT /api/v1/airport/{id}', () => {
     });
   });
 
+  const updatedAirportData: Airport = {
+    id: 999,
+    type: "test-airport",
+    airportname: "Test Airport",
+    city: "Test City",
+    country: "Test Country",
+    faa: "BCD",
+    icao: "TEST",
+    tz: "Test Europe/Paris",
+    geo: {
+      lat: 49.868547,
+      lon: 3.029578,
+      alt: 295.0
+    }
+  };
+
   it('PUT: should update an airport and return it', async () => {
-    const id = 'airport_put';
-    const updatedAirportData = {
-      id: 999,
-      type: "test-airport",
-      airportname: "Test Airport",
-      city: "Test City",
-      country: "Test Country",
-      faa: "",
-      icao: "Test LFAG",
-      tz: "Test Europe/Paris",
-      geo: {
-        lat: 49.868547,
-        lon: 3.029578,
-        alt: 295.0
-      }
-    };
 
     const response = await putHandler(
       { json: async () => updatedAirportData } as NextRequest,
@@ -140,6 +142,11 @@ describe('PUT /api/v1/airport/{id}', () => {
     const updatedAirport = await response.json();
     expect(updatedAirport.airportId).toBe(id);
     expect(updatedAirport.airportData).toEqual(updatedAirportData);
+  });
+
+  // cleanup
+  afterEach(async () => {
+    await cleanupAirport(id);
   });
 
 });

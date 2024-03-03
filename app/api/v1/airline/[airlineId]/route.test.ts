@@ -75,12 +75,12 @@ describe("POST /api/v1/airline", () => {
 
   // Clean up airline after running tests
   afterEach(async () => {
-    const { airlineCollection } = await getDatabase()
-    await airlineCollection.remove(id)
+    await cleanupAirline(id)
   })
 })
 
 describe("PUT /api/v1/airline/{id}", () => {
+
   const id = "airline_put"
 
   // Insert airline before running tests
@@ -107,13 +107,17 @@ describe("PUT /api/v1/airline/{id}", () => {
   }
 
   it("should respond with status code 200 OK and return updated airline as object", async () => {
+
     const response = await putHandler(
       { json: async () => updatedAirline } as NextRequest,
       { params: { airlineId: id } }
     )
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Content-Type')).toBe('application/json');
+
     const responseBody = await response.json()
 
-    expect(response.status).toBe(200)
     expect(responseBody.airlineId).toBe(id)
     expect(responseBody.airlineData).toEqual(updatedAirline)
   })
