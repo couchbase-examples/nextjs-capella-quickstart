@@ -178,7 +178,7 @@ export async function PUT(
  *     tags:
  *        - Airport
  *     responses:
- *       204:
+ *       202:
  *         description: Successfully deleted the airport
  *       400:
  *         description: Failed to delete airport
@@ -197,7 +197,7 @@ export async function DELETE(
     if (deletedAirport) {
       return NextResponse.json(
         { message: "Successfully deleted airport" },
-        { status: 204 }
+        { status: 202 }
       )
     } else {
       return NextResponse.json(

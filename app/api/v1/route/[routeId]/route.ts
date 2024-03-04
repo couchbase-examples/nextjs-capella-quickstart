@@ -172,7 +172,7 @@ export async function PUT(
  *     tags:
  *       - Route
  *     responses:
- *       204:
+ *       202:
  *         description: Successfully deleted the route
  *       400:
  *         description: Failed to delete route
@@ -191,7 +191,7 @@ export async function DELETE(
     if (deletedRoute) {
       return NextResponse.json(
         { message: "Successfully deleted route" },
-        { status: 204 }
+        { status: 202 }
       )
     } else {
       return NextResponse.json(

@@ -262,11 +262,11 @@ describe("DELETE /api/v1/route/{id}", () => {
         distance: 2881.617376098415,
     })
 
-    it("should respond with status code 204 No Content", async () => {
+    it("should respond with status code 202 Accepted", async () => {
         const response = await deleteHandler({} as NextRequest, {
             params: { routeId: id },
         })
 
-        expect(response.status).toBe(204)
+        expect(response.status).toBe(202)
     })
 })

@@ -7,7 +7,7 @@ import { getDatabase } from "@/lib/couchbase-connection"
  * /api/v1/airline/{airlineId}:
  *   get:
  *     summary: Get an airline by ID
- *     description: Get an airline by ID
+ *     description: "Get Airline with specified ID. \n\n This provides an example of using [Key Value operations](https://docs.couchbase.com/nodejs-sdk/current/howtos/kv-operations.html) in Couchbase to get a document with specified ID.\n\n Key Value operations are unique to Couchbase and provide very high speed get/set/delete operations.\n\n Code: `airline/[airlineId]/route.ts` Method: `GET`"
  *     tags:
  *        - Airline
  *     parameters:
@@ -57,7 +57,7 @@ export async function GET(
  * /api/v1/airline/{airlineId}:
  *   post:
  *     summary: Create an airline
- *     description: Get an airline by ID
+ *     description: "Create an airline with specified ID. \n\n This provides an example of using [Key Value operations](https://docs.couchbase.com/nodejs-sdk/current/howtos/kv-operations.html) in Couchbase to create a document with specified ID.\n\n Key Value operations are unique to Couchbase and provide very high speed get/set/delete operations.\n\n Code: `airline/[airlineId]/route.ts` Method: `POST`"
  *     tags:
  *        - Airline
  *     requestBody:
@@ -118,7 +118,7 @@ export async function POST(
  * /api/v1/airline/{airlineId}:
  *   put:
  *     summary: Update an airline
- *     description: Get an airline by ID
+ *     description: "Update an airline with specified ID. \n\n This provides an example of using [Key Value operations](https://docs.couchbase.com/nodejs-sdk/current/howtos/kv-operations.html) in Couchbase to update a document with specified ID.\n\n Key Value operations are unique to Couchbase and provide very high speed get/set/delete operations.\n\n Code: `airline/[airlineId]/route.ts` Method: `PUT`"
  *     tags:
  *        - Airline
  *     requestBody:
@@ -174,11 +174,11 @@ export async function PUT(
  * /api/v1/airline/{airlineId}:
  *   delete:
  *     summary: Delete an airline
- *     description: Get an airline by ID
+ *     description: "Delete an airline with specified ID. \n\n This provides an example of using [Key Value operations](https://docs.couchbase.com/nodejs-sdk/current/howtos/kv-operations.html) in Couchbase to delete a document with specified ID.\n\n Key Value operations are unique to Couchbase and provide very high speed get/set/delete operations.\n\n Code: `airline/[airlineId]/route.ts` Method: `DELETE`"
  *     tags:
  *        - Airline
  *     responses:
- *       204:
+ *       202:
  *         description: Successfully deleted the airline
  *       400:
  *         description: Failed to delete airline
@@ -197,7 +197,7 @@ export async function DELETE(
     if (deletedAirline) {
       return NextResponse.json(
         { message: "Successfully deleted airline" },
-        { status: 204 }
+        { status: 202 }
       )
     } else {
       return NextResponse.json(

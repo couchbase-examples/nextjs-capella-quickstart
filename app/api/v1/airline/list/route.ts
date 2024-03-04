@@ -9,7 +9,7 @@ import { Airline } from "@/app/models/Airline"
  * /api/v1/airline/list:
  *   get:
  *     summary: Get all airlines by country
- *     description: Get all airlines by country
+ *     description: "Get list of Airlines. Optionally, you can filter the list by Country.\n\nThis provides an example of using SQL++ query in Couchbase to fetch a list of documents matching the specified criteria.\n\n Code: [`app/api/v1/airline/list/route.ts`]
  *     tags:
  *       - Airline
  *     parameters:
