@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server"
 import { afterAll, afterEach, beforeEach, describe, expect, it } from "vitest"
 
-import { Route } from "@/app/models/RouteModel"
+import { Route } from "@/app/models/Route"
 
 import { getDatabase } from "@/lib/couchbase-connection"
 import {

@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server"
 import { afterAll, afterEach, beforeEach, describe, expect, it } from "vitest"
 
-import { Airline } from "@/app/models/AirlineModel"
+import { Airline } from "@/app/models/Airline"
 
 import { getDatabase } from "@/lib/couchbase-connection"
 import {

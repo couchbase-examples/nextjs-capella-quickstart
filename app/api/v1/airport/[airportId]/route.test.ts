@@ -6,7 +6,7 @@ import {
   POST as postHandler,
   PUT as putHandler,
 } from "./route"
-import { Airport } from '@/app/models/AirportModel';
+import { Airport } from '@/app/models/Airport';
 import { getDatabase } from '@/lib/couchbase-connection';
 
 const insertAirport = async (id: string, airport: Airport) => {
@@ -114,7 +114,7 @@ describe('PUT /api/v1/airport/{id}', () => {
     });
   });
 
-  const updatedAirportData: Airport = {
+  const updatedAirport: Airport = {
     id: 999,
     type: "test-airport",
     airportname: "Test Airport",
@@ -133,15 +133,16 @@ describe('PUT /api/v1/airport/{id}', () => {
   it('PUT: should update an airport and return it', async () => {
 
     const response = await putHandler(
-      { json: async () => updatedAirportData } as NextRequest,
+      { json: async () => updatedAirport } as NextRequest,
       { params: { airportId: id } });
 
     expect(response.status).toBe(200);
     expect(response.headers.get('Content-Type')).toBe('application/json');
 
-    const updatedAirport = await response.json();
-    expect(updatedAirport.airportId).toBe(id);
-    expect(updatedAirport.airportData).toEqual(updatedAirportData);
+    const responseBody = await response.json();
+
+    expect(responseBody.airportId).toBe(id);
+    expect(responseBody.airportData).toEqual(updatedAirport);
   });
 
   // cleanup
