@@ -20,22 +20,10 @@ import { getDatabase } from "@/lib/couchbase-connection"
  *     responses:
  *       200:
  *         description: Returns the airline
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Airline'
  *       400:
  *         description: Failed to fetch airline
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: An error occurred while fetching airline
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  */
 export async function GET(
   req: NextRequest,
@@ -74,29 +62,13 @@ export async function GET(
  *        - Airline
  *     requestBody:
  *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Airline'
  *     responses:
  *       201:
  *         description: Returns the created airline
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Airline'
  *       400:
  *         description: Failed to create airline
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: An error occurred while creating airline
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  */
 export async function POST(
   req: NextRequest,
@@ -151,29 +123,13 @@ export async function POST(
  *        - Airline
  *     requestBody:
  *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Airline'
  *     responses:
  *       200:
  *         description: Returns the updated airline
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Airline'
  *       400:
  *         description: Failed to update airline
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: An error occurred while updating airline
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  */
 export async function PUT(
   req: NextRequest,
@@ -226,16 +182,8 @@ export async function PUT(
  *         description: Successfully deleted the airline
  *       400:
  *         description: Failed to delete airline
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: An error occurred while deleting airline
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  */
 export async function DELETE(
   req: NextRequest,

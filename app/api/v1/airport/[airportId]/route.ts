@@ -20,22 +20,10 @@ import { getDatabase } from "@/lib/couchbase-connection"
  *     responses:
  *       200:
  *         description: Returns the airport
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Airport'
  *       400:
  *         description: Failed to fetch airport
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: An error occurred while fetching airport
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  */
 export async function GET(
   req: NextRequest,
@@ -74,29 +62,13 @@ export async function GET(
  *       - Airport
  *     requestBody:
  *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Airport'
  *     responses:
  *       201:
  *         description: Returns the created airport
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Airport'
  *       400:
  *         description: Failed to create airport
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: An error occurred while creating airport
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  */
 export async function POST(
   req: NextRequest,
@@ -151,29 +123,13 @@ export async function POST(
  *       - Airport
  *     requestBody:
  *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Airport'
  *     responses:
  *       200:
  *         description: Returns the updated airport
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Airport'
  *       400:
  *         description: Failed to update airport
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: An error occurred while updating airport
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  */
 export async function PUT(
   req: NextRequest,
@@ -226,16 +182,8 @@ export async function PUT(
  *         description: Successfully deleted the airport
  *       400:
  *         description: Failed to delete airport
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: An error occurred while deleting airport
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  */
 export async function DELETE(
   req: NextRequest,

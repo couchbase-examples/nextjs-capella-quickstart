@@ -35,18 +35,8 @@ import { getDatabase } from "@/lib/couchbase-connection"
  *     responses:
  *       200:
  *         description: A list of airports with direct connections from the target airport
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Airport'
  *       500:
  *         description: An error occurred while fetching airports
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  */
 export async function GET(
   req: NextRequest,

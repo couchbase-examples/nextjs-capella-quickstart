@@ -36,18 +36,8 @@ import { Airline } from "@/app/models/Airline"
  *     responses:
  *       200:
  *         description: A list of airlines from the specified country
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Airline'
  *       500:
  *         description: An error occurred while fetching airlines
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  */
 export async function GET(
   req: NextRequest,

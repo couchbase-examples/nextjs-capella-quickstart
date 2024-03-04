@@ -20,22 +20,10 @@ import { getDatabase } from "@/lib/couchbase-connection"
  *     responses:
  *       200:
  *         description: Returns the route
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Route'
  *       400:
  *         description: Failed to fetch route
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: An error occurred while fetching route
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  */
 export async function GET(
   req: NextRequest,
@@ -74,29 +62,13 @@ export async function GET(
  *       - Route
  *     requestBody:
  *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Route'
  *     responses:
  *       201:
  *         description: Returns the created route
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Route'
  *       400:
  *         description: Failed to create route
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: An error occurred while creating route
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  */
 export async function POST(
   req: NextRequest,
@@ -148,29 +120,13 @@ export async function POST(
  *       - Route
  *     requestBody:
  *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Route'
  *     responses:
  *       200:
  *         description: Returns the updated route
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Route'
  *       400:
  *         description: Failed to update route
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: An error occurred while updating route
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  */
 export async function PUT(
   req: NextRequest,
@@ -220,16 +176,8 @@ export async function PUT(
  *         description: Successfully deleted the route
  *       400:
  *         description: Failed to delete route
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: An error occurred while deleting route
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  */
 export async function DELETE(
   req: NextRequest,
