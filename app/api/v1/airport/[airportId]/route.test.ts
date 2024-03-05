@@ -23,20 +23,21 @@ const cleanupAirport = async (id: string) => {
 
 describe("GET /api/v1/airport/{id}", () => {
   it("GET: should return an airport for a given ID", async () => {
-    const airportId = "airport_1254"
+    const airportId = "airport_1262"
+
     const expectedAirport = {
-      id: 1254,
+      id: 1262,
       type: "airport",
-      airportname: "Calais Dunkerque",
-      city: "Calais",
+      airportname: "La Garenne",
+      city: "Agen",
       country: "France",
-      faa: "CQF",
-      icao: "LFAC",
+      faa: "AGF",
+      icao: "LFBA",
       tz: "Europe/Paris",
       geo: {
-        lat: 50.962097,
-        lon: 1.954764,
-        alt: 12,
+        lat: 44.174721,
+        lon: 0.590556,
+        alt: 204,
       },
     }
 
