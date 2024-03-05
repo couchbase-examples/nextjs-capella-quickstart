@@ -8,104 +8,85 @@ describe('GET /api/v1/airline/to-airport', () => {
         const req = {
             nextUrl: {
                 searchParams: new URLSearchParams({
-                    destinationAirportCode: 'JFK',
+                    destinationAirportCode: 'MRS',
                     limit: '10',
                     offset: '0',
                 }),
             },
         };
         const expectedAirlines =
-            [
-                {
-                    callsign: 'JETBLUE',
-                    country: 'United States',
-                    iata: 'B6',
-                    icao: 'JBU',
-                    id: 3029,
-                    name: 'JetBlue Airways',
-                    type: 'airline'
-                },
-                {
-                    callsign: 'SPEEDBIRD',
-                    country: 'United Kingdom',
-                    iata: 'BA',
-                    icao: 'BAW',
-                    id: 1355,
-                    name: 'British Airways',
-                    type: 'airline'
-                },
-                {
-                    callsign: 'DELTA',
-                    country: 'United States',
-                    iata: 'DL',
-                    icao: 'DAL',
-                    id: 2009,
-                    name: 'Delta Air Lines',
-                    type: 'airline'
-                },
-                {
-                    callsign: 'HAWAIIAN',
-                    country: 'United States',
-                    iata: 'HA',
-                    icao: 'HAL',
-                    id: 2688,
-                    name: 'Hawaiian Airlines',
-                    type: 'airline'
-                },
-                {
-                    callsign: 'FLAGSHIP',
-                    country: 'United States',
-                    iata: '9E',
-                    icao: 'FLG',
-                    id: 3976,
-                    name: 'Pinnacle Airlines',
-                    type: 'airline'
-                },
-                {
-                    callsign: 'AMERICAN',
-                    country: 'United States',
-                    iata: 'AA',
-                    icao: 'AAL',
-                    id: 24,
-                    name: 'American Airlines',
-                    type: 'airline'
-                },
-                {
-                    callsign: 'STARWAY',
-                    country: 'France',
-                    iata: 'SE',
-                    icao: 'SEU',
-                    id: 5479,
-                    name: 'XL Airways France',
-                    type: 'airline'
-                },
-                {
-                    callsign: 'SUN COUNTRY',
-                    country: 'United States',
-                    iata: 'SY',
-                    icao: 'SCX',
-                    id: 4356,
-                    name: 'Sun Country Airlines',
-                    type: 'airline'
-                },
-                {
-                    callsign: 'UNITED',
-                    country: 'United States',
-                    iata: 'UA',
-                    icao: 'UAL',
-                    id: 5209,
-                    name: 'United Airlines',
-                    type: 'airline'
-                },
-                {
-                    callsign: 'U S AIR',
-                    country: 'United States',
-                    iata: 'US',
-                    icao: 'USA',
-                    id: 5265,
-                    name: 'US Airways',
-                    type: 'airline'
-                }
+            [{
+                callsign: "AIRFRANS",
+                country: 'France',
+                iata: 'AF',
+                icao: 'AFR',
+                id: 137,
+                name: 'Air France',
+                type: 'airline'
+            },
+            {
+                callsign: 'SPEEDBIRD',
+                country: 'United Kingdom',
+                iata: 'BA',
+                icao: 'BAW',
+                id: 1355,
+                name: 'British Airways',
+                type: 'airline'
+            },
+            {
+                callsign: 'AIRLINAIR',
+                country: 'France',
+                iata: 'A5',
+                icao: 'RLA',
+                id: 1203,
+                name: 'Airlinair',
+                type: 'airline'
+            },
+            {
+                callsign: 'STARWAY',
+                country: 'France',
+                iata: 'SE',
+                icao: 'SEU',
+                id: 5479,
+                name: 'XL Airways France',
+                type: 'airline'
+            },
+            {
+                callsign: 'TWINJET',
+                country: 'France',
+                iata: 'T7',
+                icao: 'TJT',
+                id: 4965,
+                name: 'Twin Jet',
+                type: 'airline'
+            },
+            {
+                callsign: 'EASY',
+                country: 'United Kingdom',
+                iata: 'U2',
+                icao: 'EZY',
+                id: 2297,
+                name: 'easyJet',
+                type: 'airline'
+            },
+            {
+                callsign: 'AMERICAN',
+                country: 'United States',
+                iata: 'AA',
+                icao: 'AAL',
+                id: 24,
+                name: 'American Airlines',
+                type: 'airline'
+            },
+            {
+                callsign: 'CORSICA',
+                country: 'France',
+                iata: 'XK',
+                icao: 'CCM',
+                id: 1909,
+                name: 'Corse-Mediterranee',
+                type: 'airline'
+            }
             ];
 
         const response = await GET(req as NextRequest);
