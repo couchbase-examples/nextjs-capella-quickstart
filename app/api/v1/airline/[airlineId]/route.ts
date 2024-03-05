@@ -1,13 +1,21 @@
 import { NextRequest, NextResponse } from "next/server"
 
 import { getDatabase } from "@/lib/couchbase-connection"
+import { Airline } from "@/app/models/Airline"
 
 /**
  * @swagger
  * /api/v1/airline/{airlineId}:
  *   get:
  *     summary: Get an airline by ID
- *     description: "Get Airline with specified ID. \n\n This provides an example of using [Key Value operations](https://docs.couchbase.com/nodejs-sdk/current/howtos/kv-operations.html) in Couchbase to get a document with specified ID.\n\n Key Value operations are unique to Couchbase and provide very high speed get/set/delete operations.\n\n Code: `airline/[airlineId]/route.ts` Method: `GET`"
+ *     description: |
+ *       Get Airline with specified ID.
+ *       
+ *       This provides an example of using [Key Value operations](https://docs.couchbase.com/nodejs-sdk/current/howtos/kv-operations.html) in Couchbase to get a document with specified ID.
+ *       
+ *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
+ *       
+ *       Code: `airline/[airlineId]/route.ts` Method: `GET`
  *     tags:
  *        - Airline
  *     parameters:
@@ -20,8 +28,8 @@ import { getDatabase } from "@/lib/couchbase-connection"
  *     responses:
  *       200:
  *         description: Returns the airline
- *       400:
- *         description: Failed to fetch airline
+ *       404:
+ *         description: Airline not found
  *       500:
  *         description: An error occurred while fetching airline
  */
@@ -35,11 +43,11 @@ export async function GET(
 
     const airline = await airlineCollection.get(airlineId)
     if (airline) {
-      return NextResponse.json(airline.content, { status: 200 })
+      return NextResponse.json(airline.content as Airline, { status: 200 })
     } else {
       return NextResponse.json(
-        { message: "Failed to fetch airline", error: "Airline not found" },
-        { status: 400 }
+        { message: "Airline not found", error: "Airline not found" },
+        { status: 404 }
       )
     }
   } catch (error) {
@@ -57,16 +65,27 @@ export async function GET(
  * /api/v1/airline/{airlineId}:
  *   post:
  *     summary: Create an airline
- *     description: "Create an airline with specified ID. \n\n This provides an example of using [Key Value operations](https://docs.couchbase.com/nodejs-sdk/current/howtos/kv-operations.html) in Couchbase to create a document with specified ID.\n\n Key Value operations are unique to Couchbase and provide very high speed get/set/delete operations.\n\n Code: `airline/[airlineId]/route.ts` Method: `POST`"
+ *     description: |
+ *       Create an airline with specified ID.
+ *       
+ *       This provides an example of using [Key Value operations](https://docs.couchbase.com/nodejs-sdk/current/howtos/kv-operations.html) in Couchbase to create a document with specified ID.
+ *       
+ *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
+ *       
+ *       Code: `airline/[airlineId]/route.ts` Method: `POST`
  *     tags:
  *        - Airline
  *     requestBody:
  *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Airline'
  *     responses:
  *       201:
  *         description: Returns the created airline
- *       400:
- *         description: Failed to create airline
+ *       409:
+ *         description: Airline already exists
  *       500:
  *         description: An error occurred while creating airline
  */
@@ -76,7 +95,7 @@ export async function POST(
 ) {
   try {
     const { airlineId } = params
-    const airlineData = await req.json()
+    const airlineData: Airline = await req.json()
     const { airlineCollection } = await getDatabase()
 
     const createdAirline = await airlineCollection.insert(
@@ -97,10 +116,10 @@ export async function POST(
     } else {
       return NextResponse.json(
         {
-          message: "Failed to create airline",
-          error: "Airline could not be created",
+          message: "Airline already exists",
+          error: "Airline already exists",
         },
-        { status: 400 }
+        { status: 409 }
       )
     }
   } catch (error) {
@@ -118,16 +137,27 @@ export async function POST(
  * /api/v1/airline/{airlineId}:
  *   put:
  *     summary: Update an airline
- *     description: "Update an airline with specified ID. \n\n This provides an example of using [Key Value operations](https://docs.couchbase.com/nodejs-sdk/current/howtos/kv-operations.html) in Couchbase to update a document with specified ID.\n\n Key Value operations are unique to Couchbase and provide very high speed get/set/delete operations.\n\n Code: `airline/[airlineId]/route.ts` Method: `PUT`"
+ *     description: |
+ *       Update an airline with specified ID.
+ *       
+ *       This provides an example of using [Key Value operations](https://docs.couchbase.com/nodejs-sdk/current/howtos/kv-operations.html) in Couchbase to update a document with specified ID.
+ *       
+ *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
+ *       
+ *       Code: `airline/[airlineId]/route.ts` Method: `PUT`
  *     tags:
  *        - Airline
  *     requestBody:
  *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Airline'
  *     responses:
  *       200:
  *         description: Returns the updated airline
- *       400:
- *         description: Failed to update airline
+ *       404:
+ *         description: Airline not found
  *       500:
  *         description: An error occurred while updating airline
  */
@@ -137,7 +167,7 @@ export async function PUT(
 ) {
   try {
     const { airlineId } = params
-    const airlineData = await req.json()
+    const airlineData: Airline = await req.json()
     const { airlineCollection } = await getDatabase()
 
     const updatedAirline = await airlineCollection.upsert(
@@ -155,8 +185,8 @@ export async function PUT(
       )
     } else {
       return NextResponse.json(
-        { message: "Failed to update airline", error: "Airline not found" },
-        { status: 400 }
+        { message: "Airline not found", error: "Airline not found" },
+        { status: 404 }
       )
     }
   } catch (error) {
@@ -174,14 +204,21 @@ export async function PUT(
  * /api/v1/airline/{airlineId}:
  *   delete:
  *     summary: Delete an airline
- *     description: "Delete an airline with specified ID. \n\n This provides an example of using [Key Value operations](https://docs.couchbase.com/nodejs-sdk/current/howtos/kv-operations.html) in Couchbase to delete a document with specified ID.\n\n Key Value operations are unique to Couchbase and provide very high speed get/set/delete operations.\n\n Code: `airline/[airlineId]/route.ts` Method: `DELETE`"
+ *     description: |
+ *       Delete an airline with specified ID.
+ *       
+ *       This provides an example of using [Key Value operations](https://docs.couchbase.com/nodejs-sdk/current/howtos/kv-operations.html) in Couchbase to delete a document with specified ID.
+ *       
+ *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
+ *       
+ *       Code: `airline/[airlineId]/route.ts` Method: `DELETE`
  *     tags:
  *        - Airline
  *     responses:
  *       202:
  *         description: Successfully deleted the airline
- *       400:
- *         description: Failed to delete airline
+ *       404:
+ *         description: Airline not found
  *       500:
  *         description: An error occurred while deleting airline
  */
@@ -202,10 +239,10 @@ export async function DELETE(
     } else {
       return NextResponse.json(
         {
-          message: "Failed to delete airline",
-          error: "Airline could not be deleted",
+          message: "Airline not found",
+          error: "Airline not found",
         },
-        { status: 400 }
+        { status: 404 }
       )
     }
   } catch (error) {
@@ -217,3 +254,26 @@ export async function DELETE(
     )
   }
 }
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Airline:
+ *       type: object
+ *       properties:
+ *         callsign:
+ *           type: string
+ *         country:
+ *           type: string
+ *         iata:
+ *           type: string
+ *         icao:
+ *           type: string
+ *         id:
+ *           type: number
+ *         name:
+ *           type: string
+ *         type:
+ *           type: string
+ */

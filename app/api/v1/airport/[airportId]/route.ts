@@ -1,13 +1,21 @@
 import { NextRequest, NextResponse } from "next/server"
 
 import { getDatabase } from "@/lib/couchbase-connection"
+import { Airport } from "@/app/models/Airport"
 
 /**
  * @swagger
  * /api/airport/{airportId}:
  *   get:
  *     summary: Get an airport by ID
- *     description: Get an airport by ID
+ *     description: |
+ *       Get airport with specified ID.
+ *       
+ *       This provides an example of using [Key Value operations](https://docs.couchbase.com/nodejs-sdk/current/howtos/kv-operations.html) in Couchbase to get a document with specified ID.
+ *       
+ *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
+ *       
+ *       Code: `airport/[airportId]/route.ts` Method: `GET`
  *     tags:
  *       - Airport
  *     parameters:
@@ -20,8 +28,8 @@ import { getDatabase } from "@/lib/couchbase-connection"
  *     responses:
  *       200:
  *         description: Returns the airport
- *       400:
- *         description: Failed to fetch airport
+ *       404:
+ *         description: Airport not found
  *       500:
  *         description: An error occurred while fetching airport
  */
@@ -35,11 +43,11 @@ export async function GET(
 
     const airport = await airportCollection.get(airportId)
     if (airport) {
-      return NextResponse.json(airport.content, { status: 200 })
+      return NextResponse.json(airport.content as Airport, { status: 200 })
     } else {
       return NextResponse.json(
-        { message: "Failed to fetch airport", error: "Airport not found" },
-        { status: 400 }
+        { message: "Airport not found", error: "Airport not found" },
+        { status: 404 }
       )
     }
   } catch (error) {
@@ -57,16 +65,27 @@ export async function GET(
  * /api/airport/{airportId}:
  *   post:
  *     summary: Create an airport
- *     description: Create an airport
+ *     description: |
+ *       Create an airport with specified ID.
+ *       
+ *       This provides an example of using [Key Value operations](https://docs.couchbase.com/nodejs-sdk/current/howtos/kv-operations.html) in Couchbase to create a document with specified ID.
+ *       
+ *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
+ *       
+ *       Code: `airport/[airportId]/route.ts` Method: `POST`
  *     tags:
  *       - Airport
  *     requestBody:
  *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Airport'
  *     responses:
  *       201:
  *         description: Returns the created airport
- *       400:
- *         description: Failed to create airport
+ *       409:
+ *         description: Airport already exists
  *       500:
  *         description: An error occurred while creating airport
  */
@@ -76,7 +95,7 @@ export async function POST(
 ) {
   try {
     const { airportId } = params
-    const airportData = await req.json()
+    const airportData: Airport = await req.json()
     const { airportCollection } = await getDatabase()
 
     const createdAirport = await airportCollection.insert(
@@ -97,10 +116,10 @@ export async function POST(
     } else {
       return NextResponse.json(
         {
-          message: "Failed to create airport",
-          error: "Airport could not be created",
+          message: "Airport already exists",
+          error: "Airport already exists",
         },
-        { status: 400 }
+        { status: 409 }
       )
     }
   } catch (error) {
@@ -118,16 +137,27 @@ export async function POST(
  * /api/airport/{airportId}:
  *   put:
  *     summary: Update an airport
- *     description: Update an airport
+ *     description: |
+ *       Update an airport with specified ID.
+ *       
+ *       This provides an example of using [Key Value operations](https://docs.couchbase.com/nodejs-sdk/current/howtos/kv-operations.html) in Couchbase to update a document with specified ID.
+ *       
+ *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
+ *       
+ *       Code: `airport/[airportId]/route.ts` Method: `PUT`
  *     tags:
  *       - Airport
  *     requestBody:
  *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Airport'
  *     responses:
  *       200:
  *         description: Returns the updated airport
- *       400:
- *         description: Failed to update airport
+ *       404:
+ *         description: Airport not found
  *       500:
  *         description: An error occurred while updating airport
  */
@@ -137,7 +167,7 @@ export async function PUT(
 ) {
   try {
     const { airportId } = params
-    const airportData = await req.json()
+    const airportData: Airport = await req.json()
     const { airportCollection } = await getDatabase()
 
     const updatedAirport = await airportCollection.upsert(
@@ -155,8 +185,8 @@ export async function PUT(
       )
     } else {
       return NextResponse.json(
-        { message: "Failed to update airport", error: "Airport not found" },
-        { status: 400 }
+        { message: "Airport not found", error: "Airport not found" },
+        { status: 404 }
       )
     }
   } catch (error) {
@@ -174,14 +204,21 @@ export async function PUT(
  * /api/airport/{airportId}:
  *   delete:
  *     summary: Delete an airport
- *     description: Delete an airport
+ *     description: |
+ *       Delete an airport with specified ID.
+ *       
+ *       This provides an example of using [Key Value operations](https://docs.couchbase.com/nodejs-sdk/current/howtos/kv-operations.html) in Couchbase to delete a document with specified ID.
+ *       
+ *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
+ *       
+ *       Code: `airport/[airportId]/route.ts` Method: `DELETE`
  *     tags:
- *        - Airport
+ *       - Airport
  *     responses:
  *       202:
  *         description: Successfully deleted the airport
- *       400:
- *         description: Failed to delete airport
+ *       404:
+ *         description: Airport not found
  *       500:
  *         description: An error occurred while deleting airport
  */
@@ -202,10 +239,10 @@ export async function DELETE(
     } else {
       return NextResponse.json(
         {
-          message: "Failed to delete airport",
-          error: "Airport could not be deleted",
+          message: "Airport not found",
+          error: "Airport not found",
         },
-        { status: 400 }
+        { status: 404 }
       )
     }
   } catch (error) {
@@ -217,3 +254,40 @@ export async function DELETE(
     )
   }
 }
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Geo:
+ *       type: object
+ *       properties:
+ *         alt:
+ *           type: number
+ *         lat:
+ *           type: number
+ *         lon:
+ *           type: number
+ *
+ *     Airport:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: number
+ *         type:
+ *           type: string
+ *         airportname:
+ *           type: string
+ *         city:
+ *           type: string
+ *         country:
+ *           type: string
+ *         faa:
+ *           type: string
+ *         icao:
+ *           type: string
+ *         tz:
+ *           type: string
+ *         geo:
+ *           $ref: '#/components/schemas/Geo'
+ */

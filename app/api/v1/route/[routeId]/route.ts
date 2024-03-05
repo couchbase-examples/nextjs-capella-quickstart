@@ -1,13 +1,21 @@
 import { NextRequest, NextResponse } from "next/server"
 
 import { getDatabase } from "@/lib/couchbase-connection"
+import { Route } from "@/app/models/Route"
 
 /**
  * @swagger
  * /api/v1/route/{routeId}:
  *   get:
  *     summary: Get a route by ID
- *     description: Get a route by ID
+ *     description: |
+ *       Get route with specified ID.
+ *       
+ *       This provides an example of using [Key Value operations](https://docs.couchbase.com/nodejs-sdk/current/howtos/kv-operations.html) in Couchbase to get a document with specified ID.
+ *       
+ *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
+ *       
+ *       Code: `route/[routeId]/route.ts` Method: `GET`
  *     tags:
  *       - Route
  *     parameters:
@@ -20,8 +28,8 @@ import { getDatabase } from "@/lib/couchbase-connection"
  *     responses:
  *       200:
  *         description: Returns the route
- *       400:
- *         description: Failed to fetch route
+ *       404:
+ *         description: Route not found
  *       500:
  *         description: An error occurred while fetching route
  */
@@ -35,11 +43,11 @@ export async function GET(
 
     const route = await routeCollection.get(routeId)
     if (route) {
-      return NextResponse.json(route.content, { status: 200 })
+      return NextResponse.json(route.content as Route, { status: 200 })
     } else {
       return NextResponse.json(
-        { message: "Failed to fetch route", error: "Route not found" },
-        { status: 400 }
+        { message: "Route not found", error: "Route not found" },
+        { status: 404 }
       )
     }
   } catch (error) {
@@ -57,16 +65,27 @@ export async function GET(
  * /api/v1/route/{routeId}:
  *   post:
  *     summary: Create a route
- *     description: Create a route
+ *     description: |
+ *       Create a route with specified ID.
+ *       
+ *       This provides an example of using [Key Value operations](https://docs.couchbase.com/nodejs-sdk/current/howtos/kv-operations.html) in Couchbase to create a document with specified ID.
+ *       
+ *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
+ *       
+ *       Code: `route/[routeId]/route.ts` Method: `POST`
  *     tags:
  *       - Route
  *     requestBody:
  *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Route'
  *     responses:
  *       201:
  *         description: Returns the created route
- *       400:
- *         description: Failed to create route
+ *       409:
+ *         description: Route already exists
  *       500:
  *         description: An error occurred while creating route
  */
@@ -76,7 +95,7 @@ export async function POST(
 ) {
   try {
     const { routeId } = params
-    const routeData = await req.json()
+    const routeData: Route = await req.json()
     const { routeCollection } = await getDatabase()
 
     const createdRoute = await routeCollection.insert(routeId, routeData)
@@ -94,10 +113,10 @@ export async function POST(
     } else {
       return NextResponse.json(
         {
-          message: "Failed to create route",
-          error: "Route could not be created",
+          message: "Route already exists",
+          error: "Route already exists",
         },
-        { status: 400 }
+        { status: 409 }
       )
     }
   } catch (error) {
@@ -115,16 +134,27 @@ export async function POST(
  * /api/v1/route/{routeId}:
  *   put:
  *     summary: Update a route
- *     description: Update a route
+ *     description: |
+ *       Update a route with specified ID.
+ *       
+ *       This provides an example of using [Key Value operations](https://docs.couchbase.com/nodejs-sdk/current/howtos/kv-operations.html) in Couchbase to update a document with specified ID.
+ *       
+ *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
+ *       
+ *       Code: `route/[routeId]/route.ts` Method: `PUT`
  *     tags:
  *       - Route
  *     requestBody:
  *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Route'
  *     responses:
  *       200:
  *         description: Returns the updated route
- *       400:
- *         description: Failed to update route
+ *       404:
+ *         description: Route not found
  *       500:
  *         description: An error occurred while updating route
  */
@@ -134,7 +164,7 @@ export async function PUT(
 ) {
   try {
     const { routeId } = params
-    const routeData = await req.json()
+    const routeData:Route = await req.json()
     const { routeCollection } = await getDatabase()
 
     const updatedRoute = await routeCollection.upsert(routeId, routeData)
@@ -149,8 +179,8 @@ export async function PUT(
       )
     } else {
       return NextResponse.json(
-        { message: "Failed to update route", error: "Route not found" },
-        { status: 400 }
+        { message: "Route not found", error: "Route not found" },
+        { status: 404 }
       )
     }
   } catch (error) {
@@ -163,19 +193,27 @@ export async function PUT(
   }
 }
 
+
 /**
  * @swagger
  * /api/v1/route/{routeId}:
  *   delete:
  *     summary: Delete a route
- *     description: Delete a route
+ *     description: |
+ *       Delete a route with specified ID.
+ *       
+ *       This provides an example of using [Key Value operations](https://docs.couchbase.com/nodejs-sdk/current/howtos/kv-operations.html) in Couchbase to delete a document with specified ID.
+ *       
+ *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
+ *       
+ *       Code: `route/[routeId]/route.ts` Method: `DELETE`
  *     tags:
  *       - Route
  *     responses:
  *       202:
  *         description: Successfully deleted the route
- *       400:
- *         description: Failed to delete route
+ *       404:
+ *         description: Route not found
  *       500:
  *         description: An error occurred while deleting route
  */
@@ -196,13 +234,14 @@ export async function DELETE(
     } else {
       return NextResponse.json(
         {
-          message: "Failed to delete route",
-          error: "Route could not be deleted",
+          message: "Route not found",
+          error: "Route not found",
         },
-        { status: 400 }
+        { status: 404 }
       )
     }
-  } catch (error) {
+  }
+  catch (error) {
     return NextResponse.json(
       {
         message: "An error occurred while deleting route",
@@ -211,3 +250,45 @@ export async function DELETE(
     )
   }
 }
+
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Schedule:
+ *       type: object
+ *       properties:
+ *         day:
+ *           type: number
+ *         flight:
+ *           type: string
+ *         utc:
+ *           type: string
+ *
+ *     Route:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: number
+ *         type:
+ *           type: string
+ *         airline?:
+ *           type: string
+ *         airlineid?:
+ *           type: string
+ *         sourceairport?:
+ *           type: string
+ *         destinationairport?:
+ *           type: string
+ *         stops?:
+ *           type: number
+ *         equipment?:
+ *           type: string
+ *         schedule?:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Schedule'
+ *         distance?:
+ *           type: number
+ */

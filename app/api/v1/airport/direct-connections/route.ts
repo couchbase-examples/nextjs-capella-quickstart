@@ -8,7 +8,12 @@ import { getDatabase } from "@/lib/couchbase-connection"
  * /api/v1/airport/direct-connections:
  *   get:
  *     summary: Get all direct connections from a target airport
- *     description: Get all direct connections from a target airport
+ *     description: |
+ *       Returns a list of airports with direct connections from the target airport.
+ *       
+ *       This provides an example of using SQL++ query in Couchbase to fetch a list of documents matching the specified criteria.
+ * 
+ *       Code: [`app/api/v1/airport/direct-connections/route.ts`] Method: `GET`
  *     tags:
  *       - Airport
  *     parameters:

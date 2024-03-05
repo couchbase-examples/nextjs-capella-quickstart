@@ -9,7 +9,12 @@ import { Airline } from "@/app/models/Airline"
  * /api/v1/airline/to-airport:
  *   get:
  *     summary: Get airlines flying to a destination airport
- *     description: Get airlines flying to a destination airport
+ *     description: |
+ *       Get list of Airlines flying to a destination airport.
+ *    
+ *       This provides an example of using SQL++ query in Couchbase to fetch a list of documents matching the specified criteria.
+ * 
+ *       Code: [`app/api/v1/airline/to-airport/route.ts`] Method: `GET`
  *     tags:
  *        - Airline
  *     parameters:
@@ -43,9 +48,9 @@ export async function GET(
   req: NextRequest,
 ) {
   try {
-    
+
     const { scope } = await getDatabase()
-    
+
     const destinationAirportCode = req.nextUrl.searchParams.get("destinationAirportCode") ?? ""
     const limit = req.nextUrl.searchParams.get("limit") ?? 10
     const offset = req.nextUrl.searchParams.get("offset") ?? 0
