@@ -115,7 +115,7 @@ describe("POST /api/v1/airport/{id}", () => {
     expect(createdAirport.airportData).toEqual(newAirport)
   })
 
-  it("it should respond with status code 400 Bad Request", async () => {
+  it("it should respond with status code 400 Bad Request when the request body is invalid", async () => {
     const invalidAoportData = { "invalid": "data" }
     const response = await postHandler(
       {
