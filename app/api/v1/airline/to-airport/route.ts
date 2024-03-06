@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { QueryResult } from "couchbase"
 
 import { getDatabase } from "@/lib/couchbase-connection"
-import { Airline } from "@/app/models/Airline"
+import { TAirline } from "@/app/models/Airline"
 
 /**
  * @swagger
@@ -99,7 +99,7 @@ export async function GET(
     }
 
     const result: QueryResult = await scope.query(query, options)
-    const airlines: Airline[] = result.rows
+    const airlines: TAirline[] = result.rows
     return NextResponse.json(airlines, { status: 200 })
   } catch (error) {
     return NextResponse.json(
