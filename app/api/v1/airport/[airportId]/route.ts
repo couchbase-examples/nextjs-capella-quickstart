@@ -75,6 +75,13 @@ export async function GET(
  *       Code: `airport/[airportId]/route.ts` Method: `POST`
  *     tags:
  *       - Airport
+ *     parameters:
+ *       - name: airportId
+ *         in: path
+ *         description: ID of the airport
+ *         required: true
+ *         schema:
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -147,6 +154,13 @@ export async function POST(
  *       Code: `airport/[airportId]/route.ts` Method: `PUT`
  *     tags:
  *       - Airport
+ *     parameters:
+ *       - name: airportId
+ *         in: path
+ *         description: ID of the airport
+ *         required: true
+ *         schema:
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -214,6 +228,13 @@ export async function PUT(
  *       Code: `airport/[airportId]/route.ts` Method: `DELETE`
  *     tags:
  *       - Airport
+ *     parameters:
+ *       - name: airportId
+ *         in: path
+ *         description: ID of the airport
+ *         required: true
+ *         schema:
+ *           type: string
  *     responses:
  *       202:
  *         description: Successfully deleted the airport

@@ -75,6 +75,13 @@ export async function GET(
  *       Code: `airline/[airlineId]/route.ts` Method: `POST`
  *     tags:
  *        - Airline
+ *     parameters:
+ *       - name: airlineId
+ *         in: path
+ *         description: ID of the airline
+ *         required: true
+ *         schema:
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -147,6 +154,13 @@ export async function POST(
  *       Code: `airline/[airlineId]/route.ts` Method: `PUT`
  *     tags:
  *        - Airline
+ *     parameters:
+ *       - name: airlineId
+ *         in: path
+ *         description: ID of the airline
+ *         required: true
+ *         schema:
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -214,6 +228,13 @@ export async function PUT(
  *       Code: `airline/[airlineId]/route.ts` Method: `DELETE`
  *     tags:
  *        - Airline
+ *     parameters:
+ *       - name: airlineId
+ *         in: path
+ *         description: ID of the airline
+ *         required: true
+ *         schema:
+ *           type: string
  *     responses:
  *       202:
  *         description: Successfully deleted the airline
