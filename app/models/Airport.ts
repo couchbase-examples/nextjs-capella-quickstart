@@ -1,19 +1,24 @@
-type Geo = {
-  alt: number
-  lat: number
-  lon: number
-}
+import { z } from 'zod';
 
-type Airport = {
-  id: number
-  type: string
-  airportname?: string
-  city: string
-  country: string
-  faa: string
-  icao?: string
-  tz?: string
-  geo?: Geo
-}
+const GeoSchema = z.object({
+  alt: z.number(),
+  lat: z.number(),
+  lon: z.number(),
+});
 
-export type { Airport }
+const AirportSchema = z.object({
+  id: z.number(),
+  type: z.string(),
+  airportname: z.string().optional(),
+  city: z.string(),
+  country: z.string(),
+  faa: z.string(),
+  icao: z.string().optional(),
+  tz: z.string().optional(),
+  geo: GeoSchema.optional(),
+});
+
+export { AirportSchema, GeoSchema};
+
+export type TAirport = z.infer<typeof AirportSchema>;
+export type TGeo = z.infer<typeof GeoSchema>;

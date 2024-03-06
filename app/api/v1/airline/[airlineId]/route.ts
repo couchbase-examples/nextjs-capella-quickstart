@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
 
 import { getDatabase } from "@/lib/couchbase-connection"
-import { Airline } from "@/app/models/Airline"
+import { TAirline,AirlineSchema } from "@/app/models/Airline"
+import { DocumentNotFoundError,DocumentExistsError } from 'couchbase';
+
+import { ZodError } from "zod";
 
 /**
  * @swagger
@@ -42,21 +45,21 @@ export async function GET(
     const { airlineCollection } = await getDatabase()
 
     const airline = await airlineCollection.get(airlineId)
-    if (airline) {
-      return NextResponse.json(airline.content as Airline, { status: 200 })
-    } else {
+    return NextResponse.json(airline.content as TAirline, { status: 200 })
+  } catch (error) {
+    if (error instanceof DocumentNotFoundError) {
       return NextResponse.json(
         { message: "Airline not found", error: "Airline not found" },
         { status: 404 }
       )
+    } else {
+      return NextResponse.json(
+        {
+          message: "An error occurred while fetching airline",
+        },
+        { status: 500 }
+      )
     }
-  } catch (error) {
-    return NextResponse.json(
-      {
-        message: "An error occurred while fetching airline",
-      },
-      { status: 500 }
-    )
   }
 }
 
@@ -91,6 +94,8 @@ export async function GET(
  *     responses:
  *       201:
  *         description: Returns the created airline
+ *       400:
+ *         description: Invalid request body
  *       409:
  *         description: Airline already exists
  *       500:
@@ -102,25 +107,26 @@ export async function POST(
 ) {
   try {
     const { airlineId } = params
-    const airlineData: Airline = await req.json()
+    const airlineData: TAirline = await req.json()
+    const parsedAirlineData = AirlineSchema.parse(airlineData)
     const { airlineCollection } = await getDatabase()
 
     const createdAirline = await airlineCollection.insert(
       airlineId,
-      airlineData
+      parsedAirlineData
     )
-    if (createdAirline) {
-      return NextResponse.json(
-        {
-          airlineId: airlineId,
-          airlineData: airlineData,
-          createdAirline: createdAirline,
-        },
-        {
-          status: 201,
-        }
-      )
-    } else {
+    return NextResponse.json(
+      {
+        airlineId: airlineId,
+        airlineData: parsedAirlineData,
+        createdAirline: createdAirline,
+      },
+      {
+        status: 201,
+      }
+    )
+  } catch (error) {
+    if (error instanceof DocumentExistsError) {
       return NextResponse.json(
         {
           message: "Airline already exists",
@@ -128,14 +134,22 @@ export async function POST(
         },
         { status: 409 }
       )
+    } else if (error instanceof ZodError) {
+      return NextResponse.json(
+        {
+          message: "Invalid request body",
+          error: error.errors,
+        },
+        { status: 400 }
+      )
+    } else {
+      return NextResponse.json(
+        {
+          message: "An error occurred while creating airline",
+        },
+        { status: 500 }
+      )
     }
-  } catch (error) {
-    return NextResponse.json(
-      {
-        message: "An error occurred while creating airline",
-      },
-      { status: 500 }
-    )
   }
 }
 
@@ -170,8 +184,8 @@ export async function POST(
  *     responses:
  *       200:
  *         description: Returns the updated airline
- *       404:
- *         description: Airline not found
+ *       400:
+ *         description: Invalid request body
  *       500:
  *         description: An error occurred while updating airline
  */
@@ -181,35 +195,37 @@ export async function PUT(
 ) {
   try {
     const { airlineId } = params
-    const airlineData: Airline = await req.json()
+    const airlineData: TAirline = await req.json()
+    const parsedAirlineData = AirlineSchema.parse(airlineData)
     const { airlineCollection } = await getDatabase()
 
     const updatedAirline = await airlineCollection.upsert(
       airlineId,
-      airlineData
+      parsedAirlineData
     )
-    if (updatedAirline) {
+    return NextResponse.json(
+      {
+        airlineId: airlineId,
+        airlineData: parsedAirlineData,
+        updatedAirline: updatedAirline,
+      },
+      { status: 200 }
+    )
+  } catch (error) {
+    if (error instanceof ZodError) {
       return NextResponse.json(
-        {
-          airlineId: airlineId,
-          airlineData: airlineData,
-          updatedAirline: updatedAirline,
-        },
-        { status: 200 }
+        { message: "Invalid request body", error: error.errors },
+        { status: 400 }
       )
     } else {
       return NextResponse.json(
-        { message: "Airline not found", error: "Airline not found" },
-        { status: 404 }
+        {
+          message: "An error occurred while updating airline",
+          error: "An error occurred while updating airline"
+        },
+        { status: 500 }
       )
     }
-  } catch (error) {
-    return NextResponse.json(
-      {
-        message: "An error occurred while updating airline",
-      },
-      { status: 500 }
-    )
   }
 }
 
@@ -251,13 +267,13 @@ export async function DELETE(
     const { airlineId } = params
     const { airlineCollection } = await getDatabase()
 
-    const deletedAirline = await airlineCollection.remove(airlineId)
-    if (deletedAirline) {
-      return NextResponse.json(
-        { message: "Successfully deleted airline" },
-        { status: 202 }
-      )
-    } else {
+    await airlineCollection.remove(airlineId)
+    return NextResponse.json(
+      { message: "Successfully deleted airline" },
+      { status: 202 }
+    )
+  } catch (error) {
+    if (error instanceof DocumentNotFoundError) {
       return NextResponse.json(
         {
           message: "Airline not found",
@@ -265,14 +281,14 @@ export async function DELETE(
         },
         { status: 404 }
       )
+    } else {
+      return NextResponse.json(
+        {
+          message: "An error occurred while deleting airline",
+        },
+        { status: 500 }
+      )
     }
-  } catch (error) {
-    return NextResponse.json(
-      {
-        message: "An error occurred while deleting airline",
-      },
-      { status: 500 }
-    )
   }
 }
 

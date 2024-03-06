@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
 
 import { getDatabase } from "@/lib/couchbase-connection"
-import { Airport } from "@/app/models/Airport"
+import { AirportSchema, TAirport } from "@/app/models/Airport"
+
+import { DocumentNotFoundError, DocumentExistsError } from 'couchbase';
+import { ZodError } from "zod";
 
 /**
  * @swagger
@@ -42,21 +45,22 @@ export async function GET(
     const { airportCollection } = await getDatabase()
 
     const airport = await airportCollection.get(airportId)
-    if (airport) {
-      return NextResponse.json(airport.content as Airport, { status: 200 })
-    } else {
+    return NextResponse.json(airport.content as TAirport, { status: 200 })
+  } catch (error) {
+    if (error instanceof DocumentNotFoundError) {
       return NextResponse.json(
         { message: "Airport not found", error: "Airport not found" },
         { status: 404 }
       )
+    } else {
+      return NextResponse.json(
+        {
+          message: "An error occurred while fetching airport",
+          error: "An error occurred while fetching airport"
+        },
+        { status: 500 }
+      )
     }
-  } catch (error) {
-    return NextResponse.json(
-      {
-        message: "An error occurred while fetching airport",
-      },
-      { status: 500 }
-    )
   }
 }
 
@@ -91,6 +95,8 @@ export async function GET(
  *     responses:
  *       201:
  *         description: Returns the created airport
+ *       400:
+ *         description: Invalid request body
  *       409:
  *         description: Airport already exists
  *       500:
@@ -102,25 +108,26 @@ export async function POST(
 ) {
   try {
     const { airportId } = params
-    const airportData: Airport = await req.json()
+    const airportData: TAirport = await req.json()
+    const parsedAirportData = AirportSchema.parse(airportData)
     const { airportCollection } = await getDatabase()
 
     const createdAirport = await airportCollection.insert(
       airportId,
-      airportData
+      parsedAirportData
     )
-    if (createdAirport) {
-      return NextResponse.json(
-        {
-          airportId: airportId,
-          airportData: airportData,
-          createdAirport: createdAirport,
-        },
-        {
-          status: 201,
-        }
-      )
-    } else {
+    return NextResponse.json(
+      {
+        airportId: airportId,
+        airportData: airportData,
+        createdAirport: createdAirport,
+      },
+      {
+        status: 201,
+      }
+    )
+  } catch (error) {
+    if (error instanceof DocumentExistsError) {
       return NextResponse.json(
         {
           message: "Airport already exists",
@@ -128,14 +135,22 @@ export async function POST(
         },
         { status: 409 }
       )
+    } else if (error instanceof ZodError) {
+      return NextResponse.json(
+        {
+          message: "Invalid request body",
+          error: error.errors,
+        },
+        { status: 400 }
+      )
+    } else {
+      return NextResponse.json(
+        {
+          message: "An error occurred while creating airport",
+        },
+        { status: 500 }
+      )
     }
-  } catch (error) {
-    return NextResponse.json(
-      {
-        message: "An error occurred while creating airport",
-      },
-      { status: 500 }
-    )
   }
 }
 
@@ -170,8 +185,8 @@ export async function POST(
  *     responses:
  *       200:
  *         description: Returns the updated airport
- *       404:
- *         description: Airport not found
+ *       400:
+ *         description: Invalid request body
  *       500:
  *         description: An error occurred while updating airport
  */
@@ -181,35 +196,36 @@ export async function PUT(
 ) {
   try {
     const { airportId } = params
-    const airportData: Airport = await req.json()
+    const airportData: TAirport = await req.json()
+    const parsedAirportData = AirportSchema.parse(airportData)
     const { airportCollection } = await getDatabase()
 
     const updatedAirport = await airportCollection.upsert(
       airportId,
-      airportData
+      parsedAirportData
     )
-    if (updatedAirport) {
+    return NextResponse.json(
+      {
+        airportId: airportId,
+        airportData: parsedAirportData,
+        updatedAirport: updatedAirport,
+      },
+      { status: 200 }
+    )
+  } catch (error) {
+    if (error instanceof ZodError) {
       return NextResponse.json(
-        {
-          airportId: airportId,
-          airportData: airportData,
-          updatedAirport: updatedAirport,
-        },
-        { status: 200 }
+        { message: "Invalid request body", error: error.errors },
+        { status: 400 }
       )
     } else {
       return NextResponse.json(
-        { message: "Airport not found", error: "Airport not found" },
-        { status: 404 }
+        {
+          message: "An error occurred while updating airport",
+        },
+        { status: 500 }
       )
     }
-  } catch (error) {
-    return NextResponse.json(
-      {
-        message: "An error occurred while updating airport",
-      },
-      { status: 500 }
-    )
   }
 }
 
@@ -251,13 +267,13 @@ export async function DELETE(
     const { airportId } = params
     const { airportCollection } = await getDatabase()
 
-    const deletedAirport = await airportCollection.remove(airportId)
-    if (deletedAirport) {
-      return NextResponse.json(
-        { message: "Successfully deleted airport" },
-        { status: 202 }
-      )
-    } else {
+    await airportCollection.remove(airportId)
+    return NextResponse.json(
+      { message: "Successfully deleted airport" },
+      { status: 202 }
+    )
+  } catch (error) {
+    if (error instanceof DocumentNotFoundError) {
       return NextResponse.json(
         {
           message: "Airport not found",
@@ -265,14 +281,14 @@ export async function DELETE(
         },
         { status: 404 }
       )
+    } else {
+      return NextResponse.json(
+        {
+          message: "An error occurred while deleting airport",
+        },
+        { status: 500 }
+      )
     }
-  } catch (error) {
-    return NextResponse.json(
-      {
-        message: "An error occurred while deleting airport",
-      },
-      { status: 500 }
-    )
   }
 }
 

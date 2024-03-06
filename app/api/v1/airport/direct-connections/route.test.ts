@@ -24,20 +24,59 @@ describe('GET function', () => {
     expect(connections.length).toBeGreaterThan(0);
 
 
-    connections.forEach((connection:any) => {
+    connections.forEach((connection: any) => {
       expect(typeof connection).toBe('string');
     });
 
     expect(connections).toEqual(
-        expect.arrayContaining([
-            'DEL', 'LHR', 'EZE',
-            'ATL', 'CUN', 'MEX',
-            'LAX', 'SAN', 'SEA',
-            'SFO'
-        ])
+      expect.arrayContaining([
+        'DEL', 'LHR', 'EZE',
+        'ATL', 'CUN', 'MEX',
+        'LAX', 'SAN', 'SEA',
+        'SFO'
+      ])
     );
-    
+
   });
+
+  it("should return an error response when destinationAirportCode is not provided", async () => {
+    const req = {
+      nextUrl: {
+        searchParams: new URLSearchParams({
+          limit: "10",
+          offset: "0",
+        }),
+      },
+    }
+
+    const response = await GET(req as NextRequest)
+
+    expect(response.status).toBe(400)
+    expect(response.headers.get("Content-Type")).toBe("application/json")
+
+    const error = await response.json()
+    expect(error.message).toBe("Destination airport code is required")
+  })
+
+  it("should return an empty list when there are no direct connections", async () => {
+    const req = {
+      nextUrl: {
+        searchParams: new URLSearchParams({
+          destinationAirportCode: "XYZ",
+          limit: "10",
+          offset: "0",
+        }),
+      },
+    }
+
+    const response = await GET(req as NextRequest)
+
+    expect(response.status).toBe(200)
+    expect(response.headers.get("Content-Type")).toBe("application/json")
+
+    const connections = await response.json()
+    expect(connections).toEqual([])
+  })
 
   it('should return an error response when failed to fetch connections', async () => {
     const req = {} as NextRequest;

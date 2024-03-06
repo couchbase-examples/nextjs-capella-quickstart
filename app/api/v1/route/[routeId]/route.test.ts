@@ -2,7 +2,7 @@ import { NextRequest } from "next/server"
 import { afterAll, afterEach, beforeEach, describe, expect, it } from "vitest"
 
 import { getDatabase } from "@/lib/couchbase-connection"
-import { Route } from "@/app/models/Route"
+import { TRoute } from "@/app/models/Route"
 
 import {
   DELETE as deleteHandler,
@@ -11,14 +11,32 @@ import {
   PUT as putHandler,
 } from "./route"
 
-const insertRoute = async (id: string, route: Route) => {
-  const { routeCollection } = await getDatabase()
-  await routeCollection.insert(id, route)
+import { DocumentExistsError,DocumentNotFoundError } from "couchbase"
+
+const insertRoute = async (id: string, route: TRoute) => {
+  try {
+    const { routeCollection } = await getDatabase()
+    await routeCollection.insert(id, route)
+  } catch (error) {
+    if (error instanceof DocumentExistsError) {
+      console.warn(`Route with id ${id} already exists during insertion.`)
+    } else {
+      console.warn(`Failed to insert route with id ${id}: ${error}`)
+    }
+  }
 }
 
 const cleanupRoute = async (id: string) => {
-  const { routeCollection } = await getDatabase()
-  await routeCollection.remove(id)
+  try {
+    const { routeCollection } = await getDatabase()
+    await routeCollection.remove(id)
+  } catch (error) {
+    if (error instanceof DocumentNotFoundError) {
+      console.warn(`Route with id ${id} does not exist during cleanup.`)
+    } else {
+      console.warn(`Failed to remove route with id ${id}: ${error}`)
+    }
+  }
 }
 
 afterAll(async () => {
@@ -69,11 +87,22 @@ describe("GET /api/v1/route/{id}", () => {
     expect(response.status).toBe(200)
     expect(responseBody).toEqual(expectedRoute)
   })
+
+  it("should respond with status code 404 when the route ID is invalid", async () => {
+    const invalidRouteId = "invalid_route_id"
+    const response = await getHandler({} as NextRequest, {
+      params: { routeId: invalidRouteId },
+    })
+    const responseBody = await response.json()
+
+    expect(response.status).toBe(404)
+    expect(responseBody).toEqual({ message: "Route not found", error: "Route not found" })
+  })
 })
 
 describe("POST /api/v1/route", () => {
   const routeId = "route_post"
-  const newRoute: Route = {
+  const newRoute: TRoute = {
     id: 10001,
     type: "route",
     airline: "AF",
@@ -101,6 +130,33 @@ describe("POST /api/v1/route", () => {
     expect(responseBody.routeId).toBe(routeId)
     expect(responseBody.routeData).toEqual(newRoute)
   })
+
+  it("should respond with status code 400 when the request body is invalid", async () => {
+    const routeId = "route_post"
+    const invalidRequestBody = { invalid: "data" }
+
+    const response = await postHandler(
+      { json: async () => invalidRequestBody } as NextRequest,
+      { params: { routeId: routeId } }
+    )
+    const responseBody = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(responseBody.message).toBe("Invalid request body")
+  })
+
+  it("should respond with status code 409 when the route ID already exists", async () => {
+    await insertRoute(routeId, newRoute)
+
+    const response = await postHandler(
+      { json: async () => newRoute } as NextRequest,
+      { params: { routeId: routeId } }
+    )
+    const responseBody = await response.json()
+
+    expect(response.status).toBe(409)
+    expect(responseBody.message).toBe("Route already exists")
+  });
 
   // Clean up route after running tests
   afterEach(async () => {
@@ -131,7 +187,7 @@ describe("PUT /api/v1/route/{id}", () => {
     })
   })
 
-  const updatedRoute: Route = {
+  const updatedRoute: TRoute = {
     id: 9999,
     type: "route",
     airline: "AF",
@@ -161,6 +217,19 @@ describe("PUT /api/v1/route/{id}", () => {
 
     expect(responseBody.routeId).toBe(id)
     expect(responseBody.routeData).toEqual(updatedRoute)
+  })
+
+  it("should respond with status code 400 when the request body is invalid", async () => {
+    const invalidRequestBody = { invalid: "data" }
+
+    const response = await putHandler(
+      { json: async () => invalidRequestBody } as NextRequest,
+      { params: { routeId: id } }
+    )
+    const responseBody = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(responseBody.message).toBe("Invalid request body")
   })
 
   // Clean up route after running tests
@@ -196,5 +265,16 @@ describe("DELETE /api/v1/route/{id}", () => {
     })
 
     expect(response.status).toBe(202)
+  })
+
+  it("should respond with status code 404 when the route ID is invalid", async () => {
+    const invalidRouteId = "invalid_route_id"
+    const response = await deleteHandler({} as NextRequest, {
+      params: { routeId: invalidRouteId },
+    })
+    const responseBody = await response.json()
+
+    expect(response.status).toBe(404)
+    expect(responseBody).toEqual({ message: "Route not found", error: "Route not found" })
   })
 })

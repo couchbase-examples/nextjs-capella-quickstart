@@ -14,7 +14,7 @@ describe('GET function', () => {
       },
     };
 
-    const response = await GET(req as NextRequest) ;
+    const response = await GET(req as NextRequest);
 
     expect(response.status).toBe(200);
     expect(response.headers.get('Content-Type')).toBe('application/json');
@@ -58,8 +58,28 @@ describe('GET function', () => {
         type: 'airline'
       }),
     );
-    
+
   });
+
+  it("should return an empty list when there are no airlines for the given country", async () => {
+    const req = {
+      nextUrl: {
+        searchParams: new URLSearchParams({
+          country: "CountryWithNoAirlines",
+          limit: "10",
+          offset: "0",
+        }),
+      },
+    }
+
+    const response = await GET(req as NextRequest)
+
+    expect(response.status).toBe(200)
+    expect(response.headers.get("Content-Type")).toBe("application/json")
+
+    const airlines = await response.json()
+    expect(airlines).toEqual([])
+  })
 
   it('should return an error response when failed to fetch airlines', async () => {
     const req = {} as NextRequest;

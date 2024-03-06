@@ -1,21 +1,26 @@
+import { z } from 'zod';
 
-type Schedule = {
-  day: number
-  flight: string
-  utc: string
-}
 
-type Route = {
-  id: number
-  type: string
-  airline?: string
-  airlineid?: string
-  sourceairport?: string
-  destinationairport?: string
-  stops?: number
-  equipment?: string
-  schedule?: Schedule[]
-  distance?: number
-}
+const ScheduleSchema = z.object({
+  day: z.number(),
+  flight: z.string(),
+  utc: z.string(),
+});
 
-export type { Route }
+const RouteSchema = z.object({
+  id: z.number(),
+  type: z.string(),
+  airline: z.string().optional(),
+  airlineid: z.string().optional(),
+  sourceairport: z.string().optional(),
+  destinationairport: z.string().optional(),
+  stops: z.number().optional(),
+  equipment: z.string().optional(),
+  schedule: z.array(ScheduleSchema).optional(),
+  distance: z.number().optional(),
+});
+
+export { RouteSchema, ScheduleSchema};
+
+export type TRoute = z.infer<typeof RouteSchema>;
+export type TSchedule = z.infer<typeof ScheduleSchema>;

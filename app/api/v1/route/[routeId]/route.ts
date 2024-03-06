@@ -1,7 +1,10 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server";
 
-import { getDatabase } from "@/lib/couchbase-connection"
-import { Route } from "@/app/models/Route"
+import { RouteSchema, TRoute } from "@/app/models/Route";
+import { getDatabase } from "@/lib/couchbase-connection";
+
+import { DocumentExistsError, DocumentNotFoundError } from 'couchbase';
+import { ZodError } from "zod";
 
 /**
  * @swagger
@@ -42,21 +45,21 @@ export async function GET(
     const { routeCollection } = await getDatabase()
 
     const route = await routeCollection.get(routeId)
-    if (route) {
-      return NextResponse.json(route.content as Route, { status: 200 })
-    } else {
+    return NextResponse.json(route.content as TRoute, { status: 200 })
+  } catch (error) {
+    if (error instanceof DocumentNotFoundError) {
       return NextResponse.json(
         { message: "Route not found", error: "Route not found" },
         { status: 404 }
       )
+    } else {
+      return NextResponse.json(
+        {
+          message: "An error occurred while fetching route",
+        },
+        { status: 500 }
+      )
     }
-  } catch (error) {
-    return NextResponse.json(
-      {
-        message: "An error occurred while fetching route",
-      },
-      { status: 500 }
-    )
   }
 }
 
@@ -91,6 +94,8 @@ export async function GET(
  *     responses:
  *       201:
  *         description: Returns the created route
+ *       400:
+ *         description: Invalid request body
  *       409:
  *         description: Route already exists
  *       500:
@@ -102,22 +107,24 @@ export async function POST(
 ) {
   try {
     const { routeId } = params
-    const routeData: Route = await req.json()
+    const routeData: TRoute = await req.json()
+    const parsedRouteData = RouteSchema.parse(routeData)
+
     const { routeCollection } = await getDatabase()
 
-    const createdRoute = await routeCollection.insert(routeId, routeData)
-    if (createdRoute) {
-      return NextResponse.json(
-        {
-          routeId: routeId,
-          routeData: routeData,
-          createdRoute: createdRoute,
-        },
-        {
-          status: 201,
-        }
-      )
-    } else {
+    const createdRoute = await routeCollection.insert(routeId, parsedRouteData)
+    return NextResponse.json(
+      {
+        routeId: routeId,
+        routeData: parsedRouteData,
+        createdRoute: createdRoute,
+      },
+      {
+        status: 201,
+      }
+    )
+  } catch (error) {
+    if (error instanceof DocumentExistsError) {
       return NextResponse.json(
         {
           message: "Route already exists",
@@ -125,14 +132,22 @@ export async function POST(
         },
         { status: 409 }
       )
+    } else if (error instanceof ZodError) {
+      return NextResponse.json(
+        {
+          message: "Invalid request body",
+          error: error.errors,
+        },
+        { status: 400 }
+      )
+    } else {
+      return NextResponse.json(
+        {
+          message: "An error occurred while creating route",
+        },
+        { status: 500 }
+      )
     }
-  } catch (error) {
-    return NextResponse.json(
-      {
-        message: "An error occurred while creating route",
-      },
-      { status: 500 }
-    )
   }
 }
 
@@ -167,8 +182,8 @@ export async function POST(
  *     responses:
  *       200:
  *         description: Returns the updated route
- *       404:
- *         description: Route not found
+ *       400:
+ *         description: Invalid request body
  *       500:
  *         description: An error occurred while updating route
  */
@@ -178,32 +193,33 @@ export async function PUT(
 ) {
   try {
     const { routeId } = params
-    const routeData: Route = await req.json()
+    const routeData: TRoute = await req.json()
+    const parsedRouteData = RouteSchema.parse(routeData)
     const { routeCollection } = await getDatabase()
 
-    const updatedRoute = await routeCollection.upsert(routeId, routeData)
-    if (updatedRoute) {
+    const updatedRoute = await routeCollection.upsert(routeId, parsedRouteData)
+    return NextResponse.json(
+      {
+        routeId: routeId,
+        routeData: parsedRouteData,
+        updatedRoute: updatedRoute,
+      },
+      { status: 200 }
+    )
+  } catch (error) {
+    if (error instanceof ZodError) {
       return NextResponse.json(
-        {
-          routeId: routeId,
-          routeData: routeData,
-          updatedRoute: updatedRoute,
-        },
-        { status: 200 }
+        { message: "Invalid request body", error: error.errors },
+        { status: 400 }
       )
     } else {
       return NextResponse.json(
-        { message: "Route not found", error: "Route not found" },
-        { status: 404 }
+        {
+          message: "An error occurred while updating route",
+        },
+        { status: 500 }
       )
     }
-  } catch (error) {
-    return NextResponse.json(
-      {
-        message: "An error occurred while updating route",
-      },
-      { status: 500 }
-    )
   }
 }
 
@@ -246,13 +262,13 @@ export async function DELETE(
     const { routeId } = params
     const { routeCollection } = await getDatabase()
 
-    const deletedRoute = await routeCollection.remove(routeId)
-    if (deletedRoute) {
-      return NextResponse.json(
-        { message: "Successfully deleted route" },
-        { status: 202 }
-      )
-    } else {
+    await routeCollection.remove(routeId)
+    return NextResponse.json(
+      { message: "Successfully deleted route" },
+      { status: 202 }
+    )
+  } catch (error) {
+    if (error instanceof DocumentNotFoundError) {
       return NextResponse.json(
         {
           message: "Route not found",
@@ -260,15 +276,14 @@ export async function DELETE(
         },
         { status: 404 }
       )
+    } else {
+      return NextResponse.json(
+        {
+          message: "An error occurred while deleting route",
+        },
+        { status: 500 }
+      )
     }
-  }
-  catch (error) {
-    return NextResponse.json(
-      {
-        message: "An error occurred while deleting route",
-      },
-      { status: 500 }
-    )
   }
 }
 
