@@ -25,13 +25,6 @@ import { Route } from "@/app/models/Route"
  *         required: true
  *         schema:
  *           type: string
- *     parameters:
- *       - name: routeId
- *         in: path
- *         description: ID of the route
- *         required: true
- *         schema:
- *           type: string
  *     responses:
  *       200:
  *         description: Returns the route
@@ -185,7 +178,7 @@ export async function PUT(
 ) {
   try {
     const { routeId } = params
-    const routeData:Route = await req.json()
+    const routeData: Route = await req.json()
     const { routeCollection } = await getDatabase()
 
     const updatedRoute = await routeCollection.upsert(routeId, routeData)
