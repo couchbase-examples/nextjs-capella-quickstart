@@ -8,7 +8,7 @@ import { ZodError } from "zod";
 
 /**
  * @swagger
- * /api/airport/{airportId}:
+ * /api/v1/airport/{airportId}:
  *   get:
  *     summary: Get an airport by ID
  *     description: |
@@ -66,7 +66,7 @@ export async function GET(
 
 /**
  * @swagger
- * /api/airport/{airportId}:
+ * /api/v1/airport/{airportId}:
  *   post:
  *     summary: Create an airport
  *     description: |
@@ -156,7 +156,7 @@ export async function POST(
 
 /**
  * @swagger
- * /api/airport/{airportId}:
+ * /api/v1/airport/{airportId}:
  *   put:
  *     summary: Update an airport
  *     description: |
@@ -231,7 +231,7 @@ export async function PUT(
 
 /**
  * @swagger
- * /api/airport/{airportId}:
+ * /api/v1/airport/{airportId}:
  *   delete:
  *     summary: Delete an airport
  *     description: |
