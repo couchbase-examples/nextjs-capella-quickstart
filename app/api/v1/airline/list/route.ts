@@ -14,7 +14,9 @@ import { TAirline } from "@/app/models/Airline"
  *       
  *       This provides an example of using SQL++ query in Couchbase to fetch a list of documents matching the specified criteria.
  *       
- *       Code: [`app/api/v1/airline/list/route.ts`] Method: `GET`
+ *       Code: [`app/api/v1/airline/list/route.ts`]  
+ * 
+ *       Method: `GET`
  *     tags:
  *       - Airline
  *     parameters:
@@ -22,6 +24,7 @@ import { TAirline } from "@/app/models/Airline"
  *         in: query
  *         description: Country of the airline
  *         required: false
+ *         example: 'United States'
  *         schema:
  *           type: string
  *       - name: limit

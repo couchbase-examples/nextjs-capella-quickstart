@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 
 import { getDatabase } from "@/lib/couchbase-connection"
-import { TAirline,AirlineSchema } from "@/app/models/Airline"
-import { DocumentNotFoundError,DocumentExistsError } from 'couchbase';
+import { TAirline, AirlineSchema } from "@/app/models/Airline"
+import { DocumentNotFoundError, DocumentExistsError } from 'couchbase';
 
 import { ZodError } from "zod";
 
@@ -18,7 +18,9 @@ import { ZodError } from "zod";
  *       
  *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
  *       
- *       Code: `airline/[airlineId]/route.ts` Method: `GET`
+ *       Code: `airline/[airlineId]/route.ts` 
+ * 
+ *       Method: `GET`
  *     tags:
  *        - Airline
  *     parameters:
@@ -26,11 +28,16 @@ import { ZodError } from "zod";
  *         in: path
  *         description: ID of the airline
  *         required: true
+ *         example: 'airline_10'
  *         schema:
  *           type: string
  *     responses:
  *       200:
  *         description: Returns the airline
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Airline'
  *       404:
  *         description: Airline not found
  *       500:
@@ -75,7 +82,9 @@ export async function GET(
  *       
  *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
  *       
- *       Code: `airline/[airlineId]/route.ts` Method: `POST`
+ *       Code: `airline/[airlineId]/route.ts`  
+ * 
+ *       Method: `POST`
  *     tags:
  *        - Airline
  *     parameters:
@@ -83,6 +92,7 @@ export async function GET(
  *         in: path
  *         description: ID of the airline
  *         required: true
+ *         example: 'airline_10'
  *         schema:
  *           type: string
  *     requestBody:
@@ -94,6 +104,10 @@ export async function GET(
  *     responses:
  *       201:
  *         description: Returns the created airline
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Airline'
  *       400:
  *         description: Invalid request body
  *       409:
@@ -165,7 +179,9 @@ export async function POST(
  *       
  *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
  *       
- *       Code: `airline/[airlineId]/route.ts` Method: `PUT`
+ *       Code: `airline/[airlineId]/route.ts`  
+ * 
+ *       Method: `PUT`
  *     tags:
  *        - Airline
  *     parameters:
@@ -173,6 +189,7 @@ export async function POST(
  *         in: path
  *         description: ID of the airline
  *         required: true
+ *         example: 'airline_10'
  *         schema:
  *           type: string
  *     requestBody:
@@ -184,6 +201,10 @@ export async function POST(
  *     responses:
  *       200:
  *         description: Returns the updated airline
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Airline'
  *       400:
  *         description: Invalid request body
  *       500:
@@ -203,13 +224,7 @@ export async function PUT(
       airlineId,
       parsedAirlineData
     )
-    return NextResponse.json(
-      {
-        airlineId: airlineId,
-        airlineData: parsedAirlineData,
-        updatedAirline: updatedAirline,
-      },
-      { status: 200 }
+    return NextResponse.json({ parsedAirlineData }, { status: 200 }
     )
   } catch (error) {
     if (error instanceof ZodError) {
@@ -241,7 +256,9 @@ export async function PUT(
  *       
  *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
  *       
- *       Code: `airline/[airlineId]/route.ts` Method: `DELETE`
+ *       Code: `airline/[airlineId]/route.ts`  
+ * 
+ *       Method: `DELETE`
  *     tags:
  *        - Airline
  *     parameters:
@@ -249,6 +266,7 @@ export async function PUT(
  *         in: path
  *         description: ID of the airline
  *         required: true
+ *         example: 'airline_10'
  *         schema:
  *           type: string
  *     responses:

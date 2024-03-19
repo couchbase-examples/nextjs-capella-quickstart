@@ -13,7 +13,9 @@ import { getDatabase } from "@/lib/couchbase-connection"
  *       
  *       This provides an example of using SQL++ query in Couchbase to fetch a list of documents matching the specified criteria.
  * 
- *       Code: [`app/api/v1/airport/direct-connections/route.ts`] Method: `GET`
+ *       Code: [`app/api/v1/airport/direct-connections/route.ts`]  
+ * 
+ *       Method: `GET`
  *     tags:
  *       - Airport
  *     parameters:
@@ -21,6 +23,7 @@ import { getDatabase } from "@/lib/couchbase-connection"
  *         in: query
  *         description: FAA code of the target airport
  *         required: true
+ *         example: 'LAX'
  *         schema:
  *           type: string
  *       - name: limit

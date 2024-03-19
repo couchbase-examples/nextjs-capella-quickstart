@@ -18,7 +18,9 @@ import { ZodError } from "zod";
  *       
  *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
  *       
- *       Code: `airport/[airportId]/route.ts` Method: `GET`
+ *       Code: `airport/[airportId]/route.ts`  
+ * 
+ *       Method: `GET`
  *     tags:
  *       - Airport
  *     parameters:
@@ -26,11 +28,16 @@ import { ZodError } from "zod";
  *         in: path
  *         description: ID of the airport
  *         required: true
+ *         example: 'airport_1254'
  *         schema:
  *           type: string
  *     responses:
  *       200:
  *         description: Returns the airport
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Airport'
  *       404:
  *         description: Airport not found
  *       500:
@@ -76,7 +83,9 @@ export async function GET(
  *       
  *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
  *       
- *       Code: `airport/[airportId]/route.ts` Method: `POST`
+ *       Code: `airport/[airportId]/route.ts`  
+ * 
+ *       Method: `POST`
  *     tags:
  *       - Airport
  *     parameters:
@@ -84,6 +93,7 @@ export async function GET(
  *         in: path
  *         description: ID of the airport
  *         required: true
+ *         example: 'airport_1254'
  *         schema:
  *           type: string
  *     requestBody:
@@ -95,6 +105,10 @@ export async function GET(
  *     responses:
  *       201:
  *         description: Returns the created airport
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Airport'
  *       400:
  *         description: Invalid request body
  *       409:
@@ -166,7 +180,9 @@ export async function POST(
  *       
  *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
  *       
- *       Code: `airport/[airportId]/route.ts` Method: `PUT`
+ *       Code: `airport/[airportId]/route.ts`  
+ * 
+ *       Method: `PUT`
  *     tags:
  *       - Airport
  *     parameters:
@@ -174,6 +190,7 @@ export async function POST(
  *         in: path
  *         description: ID of the airport
  *         required: true
+ *         example: 'airport_1254'
  *         schema:
  *           type: string
  *     requestBody:
@@ -185,6 +202,10 @@ export async function POST(
  *     responses:
  *       200:
  *         description: Returns the updated airport
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Airport'
  *       400:
  *         description: Invalid request body
  *       500:
@@ -204,14 +225,7 @@ export async function PUT(
       airportId,
       parsedAirportData
     )
-    return NextResponse.json(
-      {
-        airportId: airportId,
-        airportData: parsedAirportData,
-        updatedAirport: updatedAirport,
-      },
-      { status: 200 }
-    )
+    return NextResponse.json({ parsedAirportData }, { status: 200 })
   } catch (error) {
     if (error instanceof ZodError) {
       return NextResponse.json(
@@ -241,7 +255,9 @@ export async function PUT(
  *       
  *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
  *       
- *       Code: `airport/[airportId]/route.ts` Method: `DELETE`
+ *       Code: `airport/[airportId]/route.ts`  
+ * 
+ *       Method: `DELETE`
  *     tags:
  *       - Airport
  *     parameters:
@@ -249,6 +265,7 @@ export async function PUT(
  *         in: path
  *         description: ID of the airport
  *         required: true
+ *         example: 'airport_1254'
  *         schema:
  *           type: string
  *     responses:

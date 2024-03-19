@@ -11,7 +11,7 @@ import {
   PUT as putHandler,
 } from "./route"
 
-import { DocumentExistsError,DocumentNotFoundError } from "couchbase"
+import { DocumentExistsError, DocumentNotFoundError } from "couchbase"
 
 const insertRoute = async (id: string, route: TRoute) => {
   try {
@@ -215,8 +215,7 @@ describe("PUT /api/v1/route/{id}", () => {
 
     const responseBody = await response.json()
 
-    expect(responseBody.routeId).toBe(id)
-    expect(responseBody.routeData).toEqual(updatedRoute)
+    expect(responseBody.parsedRouteData).toEqual(updatedRoute)
   })
 
   it("should respond with status code 400 when the request body is invalid", async () => {

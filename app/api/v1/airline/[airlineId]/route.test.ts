@@ -11,7 +11,7 @@ import {
   PUT as putHandler,
 } from "./route"
 
-import { DocumentExistsError,DocumentNotFoundError } from "couchbase"
+import { DocumentExistsError, DocumentNotFoundError } from "couchbase"
 
 const insertAirline = async (id: string, airline: TAirline) => {
   try {
@@ -104,7 +104,7 @@ describe("POST /api/v1/airline", () => {
   })
 
   it("should respond with status code 400 Bad Request when the request body is invalid", async () => {
-    const invalidAirlineData = { "invalid": "data"}
+    const invalidAirlineData = { "invalid": "data" }
     const response = await postHandler(
       { json: async () => invalidAirlineData } as NextRequest,
       { params: { airlineId: id } }
@@ -174,12 +174,11 @@ describe("PUT /api/v1/airline/{id}", () => {
 
     const responseBody = await response.json()
 
-    expect(responseBody.airlineId).toBe(id)
-    expect(responseBody.airlineData).toEqual(updatedAirline)
+    expect(responseBody.parsedAirlineData).toEqual(updatedAirline)
   })
 
   it("should respond with status code 400 Bad Request when the airline ID is invalid", async () => {
-    const invalidAirlineData = { "invalid": "data"}
+    const invalidAirlineData = { "invalid": "data" }
     const response = await putHandler(
       { json: async () => invalidAirlineData } as NextRequest,
       { params: { airlineId: id } }

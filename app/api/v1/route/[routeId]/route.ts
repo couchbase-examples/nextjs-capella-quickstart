@@ -18,7 +18,9 @@ import { ZodError } from "zod";
  *       
  *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
  *       
- *       Code: `route/[routeId]/route.ts` Method: `GET`
+ *       Code: `route/[routeId]/route.ts`  
+ * 
+ *       Method: `GET`
  *     tags:
  *       - Route
  *     parameters:
@@ -26,11 +28,16 @@ import { ZodError } from "zod";
  *         in: path
  *         description: ID of the route
  *         required: true
+ *         example: 'route_10000'
  *         schema:
  *           type: string
  *     responses:
  *       200:
  *         description: Returns the route
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Route'
  *       404:
  *         description: Route not found
  *       500:
@@ -75,7 +82,9 @@ export async function GET(
  *       
  *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
  *       
- *       Code: `route/[routeId]/route.ts` Method: `POST`
+ *       Code: `route/[routeId]/route.ts`  
+ * 
+ *       Method: `POST`
  *     tags:
  *       - Route
  *     parameters:
@@ -83,6 +92,7 @@ export async function GET(
  *         in: path
  *         description: ID of the route
  *         required: true
+ *         example: 'route_10000'
  *         schema:
  *           type: string
  *     requestBody:
@@ -94,6 +104,10 @@ export async function GET(
  *     responses:
  *       201:
  *         description: Returns the created route
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Route'
  *       400:
  *         description: Invalid request body
  *       409:
@@ -163,7 +177,9 @@ export async function POST(
  *       
  *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
  *       
- *       Code: `route/[routeId]/route.ts` Method: `PUT`
+ *       Code: `route/[routeId]/route.ts`  
+ * 
+ *       Method: `PUT`
  *     tags:
  *       - Route
  *     parameters:
@@ -171,6 +187,7 @@ export async function POST(
  *         in: path
  *         description: ID of the route
  *         required: true
+ *         example: 'route_10000'
  *         schema:
  *           type: string
  *     requestBody:
@@ -182,6 +199,10 @@ export async function POST(
  *     responses:
  *       200:
  *         description: Returns the updated route
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Route'
  *       400:
  *         description: Invalid request body
  *       500:
@@ -198,14 +219,7 @@ export async function PUT(
     const { routeCollection } = await getDatabase()
 
     const updatedRoute = await routeCollection.upsert(routeId, parsedRouteData)
-    return NextResponse.json(
-      {
-        routeId: routeId,
-        routeData: parsedRouteData,
-        updatedRoute: updatedRoute,
-      },
-      { status: 200 }
-    )
+    return NextResponse.json({ parsedRouteData }, { status: 200 })
   } catch (error) {
     if (error instanceof ZodError) {
       return NextResponse.json(
@@ -236,7 +250,9 @@ export async function PUT(
  *       
  *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
  *       
- *       Code: `route/[routeId]/route.ts` Method: `DELETE`
+ *       Code: `route/[routeId]/route.ts`  
+ * 
+ *       Method: `DELETE`
  *     tags:
  *       - Route
  *     parameters:
@@ -244,6 +260,7 @@ export async function PUT(
  *         in: path
  *         description: ID of the route
  *         required: true
+ *         example: 'route_10000'
  *         schema:
  *           type: string
  *     responses:

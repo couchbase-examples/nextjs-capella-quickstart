@@ -1,6 +1,6 @@
 import * as couchbase from "couchbase"
 
-const DB_USERNAME: string = process.env.DB_USERNAME ?? "kaustav"
+const DB_USERNAME: string = process.env.DB_USERNAME ?? "Administrator"
 const DB_PASSWORD: string = process.env.DB_PASSWORD ?? "password"
 const DB_CONN_STR: string = process.env.DB_CONN_STR ?? "localhost"
 const DB_BUCKET_NAME: string = process.env.DB_BUCKET_NAME ?? "travel-sample"

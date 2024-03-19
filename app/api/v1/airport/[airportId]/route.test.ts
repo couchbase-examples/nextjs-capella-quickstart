@@ -203,8 +203,7 @@ describe("PUT /api/v1/airport/{id}", () => {
 
     const responseBody = await response.json()
 
-    expect(responseBody.airportId).toBe(id)
-    expect(responseBody.airportData).toEqual(updatedAirport)
+    expect(responseBody.parsedAirportData).toEqual(updatedAirport)
   })
 
   it("it should respond with status code 400 Bad Request", async () => {
