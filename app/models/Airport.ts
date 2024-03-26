@@ -7,15 +7,15 @@ const GeoSchema = z.object({
 });
 
 const AirportSchema = z.object({
-  id: z.number(),
-  type: z.string(),
-  airportname: z.string().optional(),
+  id: z.number().optional(),
+  type: z.string().optional(),
+  airportname: z.string(),
   city: z.string(),
   country: z.string(),
   faa: z.string(),
-  icao: z.string().optional(),
-  tz: z.string().optional(),
-  geo: GeoSchema.optional(),
+  icao: z.string(),
+  tz: z.string(),
+  geo: GeoSchema,
 });
 
 export { AirportSchema, GeoSchema};

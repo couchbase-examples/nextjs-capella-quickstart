@@ -7,25 +7,25 @@ const DB_BUCKET_NAME: string = process.env.DB_BUCKET_NAME ?? "travel-sample"
 
 if (!DB_USERNAME) {
   throw new Error(
-    "Please define the DB_USERNAME environment variable inside .env.local"
+    "Please define the DB_USERNAME environment variable inside dev.env"
   )
 }
 
 if (!DB_PASSWORD) {
   throw new Error(
-    "Please define the DB_PASSWORD environment variable inside .env.local"
+    "Please define the DB_PASSWORD environment variable inside dev.env"
   )
 }
 
 if (!DB_CONN_STR) {
   throw new Error(
-    "Please define the DB_CONN_STR environment variable inside .env.local"
+    "Please define the DB_CONN_STR environment variable inside dev.env"
   )
 }
 
 if (!DB_BUCKET_NAME) {
   throw new Error(
-    "Please define the DB_BUCKET_NAME environment variable inside .env.local"
+    "Please define the DB_BUCKET_NAME environment variable inside dev.env"
   )
 }
 

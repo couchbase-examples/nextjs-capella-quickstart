@@ -8,16 +8,16 @@ const ScheduleSchema = z.object({
 });
 
 const RouteSchema = z.object({
-  id: z.number(),
-  type: z.string(),
-  airline: z.string().optional(),
-  airlineid: z.string().optional(),
-  sourceairport: z.string().optional(),
-  destinationairport: z.string().optional(),
-  stops: z.number().optional(),
-  equipment: z.string().optional(),
-  schedule: z.array(ScheduleSchema).optional(),
-  distance: z.number().optional(),
+  id: z.number().optional(),
+  type: z.string().optional(),
+  airline: z.string(),
+  airlineid: z.string(),
+  sourceairport: z.string(),
+  destinationairport: z.string(),
+  stops: z.number(),
+  equipment: z.string(),
+  schedule: z.array(ScheduleSchema),
+  distance: z.number(),
 });
 
 export { RouteSchema, ScheduleSchema};

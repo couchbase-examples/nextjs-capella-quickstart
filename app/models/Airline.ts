@@ -1,13 +1,13 @@
 import { z } from 'zod';
 
 const AirlineSchema = z.object({
-  callsign: z.string().optional(),
+  id: z.number().optional(),
+  type: z.string().optional(),
+  callsign: z.string(),
   country: z.string(),
-  iata: z.string().optional(),
+  iata: z.string(),
   icao: z.string(),
-  id: z.number(),
   name: z.string(),
-  type: z.string(),
 });
 
 export { AirlineSchema };

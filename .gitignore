@@ -1,5 +1,7 @@
 .env
 .env.local
+dev.env
+test.env
 
 # lock files
 package-lock.json

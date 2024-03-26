@@ -16,7 +16,7 @@ If you are looking for a quick start using Node.js, you can find it in this repo
 To run this prebuilt project, you will need:
 
 - [Couchbase Capella](https://www.couchbase.com/products/capella/) cluster with [travel-sample](https://docs.couchbase.com/nodejs-sdk/current/ref/travel-app-data-model.html) bucket loaded.
-  - To run this tutorial using a self managed Couchbase cluster, please refer to the [appendix](#running-self-managed-couchbase-cluster).
+  - To run this tutorial using a self-managed Couchbase cluster, please refer to the [appendix](#running-self-managed-couchbase-cluster).
 - [LTS Node.js Version](https://nodejs.org/en/download) installed on local machine.
 - Basic knowledge of [JavaScript](https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/JavaScript_basics), [TypeScript](https://www.typescriptlang.org/) and [Next.js](https://nextjs.org/learn).
 - Loading Travel Sample Bucket
@@ -38,7 +38,6 @@ git clone https://github.com/couchbase-examples/nextjs-capella-quickstart.git
 Any dependencies will be installed by running the npm install command, which installs any dependencies required for the project.
 
 ```sh
-# Execute this command in the project's root directory which is `nextjs-capella-quickstart`
 npm install
 ```
 
@@ -51,14 +50,15 @@ Specifically, you need to do the following:
 - Create the [database credentials](https://docs.couchbase.com/cloud/clusters/manage-database-users.html) to access the travel-sample bucket (Read and Write) used in the application.
 - [Allow access](https://docs.couchbase.com/cloud/clusters/allow-ip-address.html) to the Cluster from the IP on which the application is running.
 
-All configuration for communication with the database is read from the environment variables. We have provided a convenience feature in this quickstart to read the environment variables from a local file, `.env.local.example`.
+All configuration for communication with the database is read from the environment variables. We have provided a convenience feature in this quickstart to read the environment variables from a local file, `dev.env.example`.
 
-Create a copy of `.env.local.example` file and rename it to `.env.local` and add the values for the Couchbase connection.
+Create a copy of `dev.env.example` file and rename it to `dev.env` and add the values for the Couchbase connection.
 
 ```sh
 DB_CONN_STR=<connection_string>
 DB_USERNAME=<user_with_read_write_permission_to_travel-sample_bucket>
 DB_PASSWORD=<password_for_user>
+DB_BUCKET_NAME=travel-sample
 ```
 
 > Note: The connection string expects the `couchbases://` or `couchbase://` part.
@@ -72,7 +72,6 @@ At this point, we have installed the dependencies, loaded the travel-sample data
 The application will run on a port specified by Next.js. You can find the port in the terminal after running the application. You will find the [Swagger documentation](#swagger-documentation) at [http://localhost:3000/api-doc](http://localhost:3000/api-doc) of the API if you go to the URL in your browser.
 
 ```sh
-# Execute this command in the project's root directory
 npm run dev
 ```
 
@@ -81,18 +80,16 @@ npm run dev
 - Build the Docker image
 
 ```sh
-# Execute this command in the project's root directory
 docker build -t couchbase-nextjs-quickstart .
 ```
 
 - Run the Docker image
 
 ```sh
-# Execute this command in the project's root directory.
 docker run -p 3000:3000 nextjs-capella-quickstart -e DB_CONN_STR=<connection_string> -e DB_USERNAME=<user_with_read_write_permission_to_travel-sample_bucket> -e DB_PASSWORD=<password_for_user>
 ```
 
-> Note: The `.env.local.example` file in the root folder has the connection information to connect to your Capella cluster. Create a copy of `.env.local.example` file and rename it to `.env.local` and add the values for the Couchbase connection.
+> Note: The `dev.env.example` file in the root folder has the connection information to connect to your Capella cluster. Create a copy of `dev.env.example` file and rename it to `dev.env` and add the values for the Couchbase connection.
 
 ### Verifying the Application
 
@@ -106,10 +103,19 @@ The application will run on the port specified by Nextjs on your local machine (
 
 ## Running The Tests
 
+Create a copy of `test.env.example` file and rename it to `test.env` and add the values for the Couchbase connection.
+
+```sh
+DB_CONN_STR=<connection_string>
+DB_USERNAME=<user_with_read_write_permission_to_travel-sample_bucket>
+DB_PASSWORD=<password_for_user>
+DB_BUCKET_NAME=travel-sample
+```
+
+
 To run the integration tests, use the following commands:
 
 ```sh
-# Execute this command in the project's root directory
 npm run test
 ```
 
@@ -138,7 +144,7 @@ Following these steps ensures a systematic and organized approach to expanding t
 
 If you are running this quickstart with a self-managed Couchbase cluster, you need to [load](https://docs.couchbase.com/server/current/manage/manage-settings/install-sample-buckets.html) the travel-sample data bucket in your cluster and generate the credentials for the bucket by [creating a user](https://docs.couchbase.com/server/current/manage/manage-security/manage-users-and-roles.html#add-a-user).
 
-You need to update the connection string and the credentials in the `.env.local` file in the root folder.
+You need to update the connection string and the credentials in the `dev.env` file in the root folder.
 
 > Note: Couchbase Server must be installed and running prior to running this app.
 

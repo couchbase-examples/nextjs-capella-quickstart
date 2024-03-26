@@ -1,37 +1,12 @@
-import Link from "next/link"
+import { getApiDocs } from "@/lib/swagger"
 
-import { siteConfig } from "@/config/site"
-import { buttonVariants } from "@/components/ui/button"
+import ReactSwagger from "./api-doc/react-swagger"
 
-export default function IndexPage() {
+export default async function IndexPage() {
+  const spec = await getApiDocs()
   return (
-    <section className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
-      <div className="flex max-w-[980px] flex-col items-start gap-2">
-        <h1 className="text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl">
-          Welcome to {siteConfig.name}
-        </h1>
-        <p className="text-muted-foreground max-w-[700px] text-lg">
-          Click on <Link href={"/api-doc"}>Doc</Link> to see the swagger UI.
-        </p>
-      </div>
-      <div className="flex gap-4">
-        <Link
-          href={siteConfig.links.docs}
-          target="_blank"
-          rel="noreferrer"
-          className={buttonVariants()}
-        >
-          Next-Swagger Documentation
-        </Link>
-        <Link
-          target="_blank"
-          rel="noreferrer"
-          href={siteConfig.links.github}
-          className={buttonVariants({ variant: "outline" })}
-        >
-          Next-Swagger GitHub
-        </Link>
-      </div>
+    <section className="container">
+      <ReactSwagger spec={spec} />
     </section>
   )
 }
