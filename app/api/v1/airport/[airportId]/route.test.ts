@@ -111,8 +111,7 @@ describe("POST /api/v1/airport/{id}", () => {
     expect(response.headers.get("Content-Type")).toBe("application/json")
 
     const createdAirport = await response.json()
-    expect(createdAirport.airportId).toBe(airportId)
-    expect(createdAirport.airportData).toEqual(newAirport)
+    expect(createdAirport).toEqual(newAirport)
   })
 
   it("it should respond with status code 400 Bad Request when the request body is invalid", async () => {

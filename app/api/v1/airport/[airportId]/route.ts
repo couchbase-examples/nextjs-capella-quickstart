@@ -126,20 +126,11 @@ export async function POST(
     const parsedAirportData = AirportSchema.parse(airportData)
     const { airportCollection } = await getDatabase()
 
-    const createdAirport = await airportCollection.insert(
+    await airportCollection.insert(
       airportId,
       parsedAirportData
     )
-    return NextResponse.json(
-      {
-        airportId: airportId,
-        airportData: airportData,
-        createdAirport: createdAirport,
-      },
-      {
-        status: 201,
-      }
-    )
+    return NextResponse.json(parsedAirportData, { status: 201 })
   } catch (error) {
     if (error instanceof DocumentExistsError) {
       return NextResponse.json(
@@ -221,7 +212,7 @@ export async function PUT(
     const parsedAirportData = AirportSchema.parse(airportData)
     const { airportCollection } = await getDatabase()
 
-    const updatedAirport = await airportCollection.upsert(
+    await airportCollection.upsert(
       airportId,
       parsedAirportData
     )
@@ -313,35 +304,59 @@ export async function DELETE(
  * @swagger
  * components:
  *   schemas:
- *     Geo:
- *       type: object
- *       properties:
- *         alt:
- *           type: number
- *         lat:
- *           type: number
- *         lon:
- *           type: number
- *
  *     Airport:
  *       type: object
  *       properties:
  *         id:
  *           type: number
+ *           example: 1262
  *         type:
  *           type: string
+ *           example: 'airport'
  *         airportname:
  *           type: string
+ *           example: 'John F. Kennedy International Airport'
  *         city:
  *           type: string
+ *           example: 'New York'
  *         country:
  *           type: string
+ *           example: 'United States'
  *         faa:
  *           type: string
+ *           example: 'JFK'
  *         icao:
  *           type: string
+ *           example: 'KJFK'
  *         tz:
  *           type: string
+ *           example: 'America/New_York'
  *         geo:
  *           $ref: '#/components/schemas/Geo'
+ *       required:
+ *         - airportname
+ *         - city
+ *         - country
+ *         - faa
+ *         - icao
+ *         - tz
+ *         - geo
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Geo:
+ *       type: object
+ *       properties:
+ *         alt:
+ *           type: number
+ *           example: 13
+ *         lat:
+ *           type: number
+ *           example: 40.63980103
+ *         lon:
+ *           type: number
+ *           example: -73.77890015
  */

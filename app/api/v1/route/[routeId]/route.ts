@@ -126,17 +126,8 @@ export async function POST(
 
     const { routeCollection } = await getDatabase()
 
-    const createdRoute = await routeCollection.insert(routeId, parsedRouteData)
-    return NextResponse.json(
-      {
-        routeId: routeId,
-        routeData: parsedRouteData,
-        createdRoute: createdRoute,
-      },
-      {
-        status: 201,
-      }
-    )
+    await routeCollection.insert(routeId, parsedRouteData)
+    return NextResponse.json(parsedRouteData, { status: 201 })
   } catch (error) {
     if (error instanceof DocumentExistsError) {
       return NextResponse.json(
@@ -218,7 +209,7 @@ export async function PUT(
     const parsedRouteData = RouteSchema.parse(routeData)
     const { routeCollection } = await getDatabase()
 
-    const updatedRoute = await routeCollection.upsert(routeId, parsedRouteData)
+    await routeCollection.upsert(routeId, parsedRouteData)
     return NextResponse.json({ parsedRouteData }, { status: 200 })
   } catch (error) {
     if (error instanceof ZodError) {
@@ -324,24 +315,49 @@ export async function DELETE(
  *       properties:
  *         id:
  *           type: number
+ *           example: 1
  *         type:
  *           type: string
- *         airline?:
+ *           example: 'route'
+ *         airline:
  *           type: string
- *         airlineid?:
+ *           example: 'Delta Air Lines'
+ *         airlineid:
  *           type: string
- *         sourceairport?:
+ *           example: 'DL'
+ *         sourceairport:
  *           type: string
- *         destinationairport?:
+ *           example: 'JFK'
+ *         destinationairport:
  *           type: string
- *         stops?:
+ *           example: 'LAX'
+ *         stops:
  *           type: number
- *         equipment?:
+ *           example: 0
+ *         equipment:
  *           type: string
- *         schedule?:
+ *           example: 'Boeing 737'
+ *         schedule:
  *           type: array
  *           items:
  *             $ref: '#/components/schemas/Schedule'
- *         distance?:
+ *           example:
+ *             - day: 1
+ *               flight: 'DL101'
+ *               utc: '08:00'
+ *             - day: 2
+ *               flight: 'DL102'
+ *               utc: '12:00'
+ *         distance:
  *           type: number
+ *           example: 2475
+ *       required:
+ *         - airline
+ *         - airlineid
+ *         - sourceairport
+ *         - destinationairport
+ *         - stops
+ *         - equipment
+ *         - schedule
+ *         - distance
  */

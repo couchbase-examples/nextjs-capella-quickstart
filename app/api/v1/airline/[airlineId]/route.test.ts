@@ -99,8 +99,7 @@ describe("POST /api/v1/airline", () => {
     const responseBody = await response.json()
 
     expect(response.status).toBe(201)
-    expect(responseBody.airlineId).toBe(id)
-    expect(responseBody.airlineData).toEqual(newAirline)
+    expect(responseBody).toEqual(newAirline)
   })
 
   it("should respond with status code 400 Bad Request when the request body is invalid", async () => {

@@ -125,20 +125,12 @@ export async function POST(
     const parsedAirlineData = AirlineSchema.parse(airlineData)
     const { airlineCollection } = await getDatabase()
 
-    const createdAirline = await airlineCollection.insert(
+    await airlineCollection.insert(
       airlineId,
       parsedAirlineData
     )
-    return NextResponse.json(
-      {
-        airlineId: airlineId,
-        airlineData: parsedAirlineData,
-        createdAirline: createdAirline,
-      },
-      {
-        status: 201,
-      }
-    )
+
+    return NextResponse.json(parsedAirlineData, { status: 201 })
   } catch (error) {
     if (error instanceof DocumentExistsError) {
       return NextResponse.json(
@@ -157,6 +149,7 @@ export async function POST(
         { status: 400 }
       )
     } else {
+      console.log(error)
       return NextResponse.json(
         {
           message: "An error occurred while creating airline",
@@ -220,7 +213,7 @@ export async function PUT(
     const parsedAirlineData = AirlineSchema.parse(airlineData)
     const { airlineCollection } = await getDatabase()
 
-    const updatedAirline = await airlineCollection.upsert(
+    await airlineCollection.upsert(
       airlineId,
       parsedAirlineData
     )
@@ -319,16 +312,29 @@ export async function DELETE(
  *       properties:
  *         callsign:
  *           type: string
+ *           example: 'ABC123'
  *         country:
  *           type: string
+ *           example: 'United States'
  *         iata:
  *           type: string
+ *           example: 'AA'
  *         icao:
  *           type: string
+ *           example: 'AAL'
  *         id:
  *           type: number
+ *           example: 1
  *         name:
  *           type: string
+ *           example: 'American Airlines'
  *         type:
  *           type: string
+ *           example: 'International'
+ *       required:
+ *         - callsign
+ *         - country
+ *         - iata
+ *         - icao
+ *         - name
  */

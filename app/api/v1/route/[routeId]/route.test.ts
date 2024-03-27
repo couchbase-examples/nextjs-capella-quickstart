@@ -127,8 +127,7 @@ describe("POST /api/v1/route", () => {
     const responseBody = await response.json()
 
     expect(response.status).toBe(201)
-    expect(responseBody.routeId).toBe(routeId)
-    expect(responseBody.routeData).toEqual(newRoute)
+    expect(responseBody).toEqual(newRoute)
   })
 
   it("should respond with status code 400 when the request body is invalid", async () => {
