@@ -313,12 +313,6 @@ export async function DELETE(
  *     Route:
  *       type: object
  *       properties:
- *         id:
- *           type: number
- *           example: 1
- *         type:
- *           type: string
- *           example: 'route'
  *         airline:
  *           type: string
  *           example: 'Delta Air Lines'

@@ -8,8 +8,6 @@ const ScheduleSchema = z.object({
 });
 
 const RouteSchema = z.object({
-  id: z.number().optional(),
-  type: z.string().optional(),
   airline: z.string(),
   airlineid: z.string(),
   sourceairport: z.string(),

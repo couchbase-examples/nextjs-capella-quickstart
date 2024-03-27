@@ -7,8 +7,6 @@ const GeoSchema = z.object({
 });
 
 const AirportSchema = z.object({
-  id: z.number().optional(),
-  type: z.string().optional(),
   airportname: z.string(),
   city: z.string(),
   country: z.string(),

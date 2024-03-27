@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { describe, expect, it } from "vitest";
 import { GET } from './route';
+import { TAirline } from '@/app/models/Airline';
 
 describe('GET /api/v1/airline/to-airport', () => {
 
@@ -14,78 +15,62 @@ describe('GET /api/v1/airline/to-airport', () => {
                 }),
             },
         };
-        const expectedAirlines =
+        const expectedAirlines:TAirline[] =
             [{
                 callsign: "AIRFRANS",
                 country: 'France',
                 iata: 'AF',
                 icao: 'AFR',
-                id: 137,
                 name: 'Air France',
-                type: 'airline'
             },
             {
                 callsign: 'SPEEDBIRD',
                 country: 'United Kingdom',
                 iata: 'BA',
                 icao: 'BAW',
-                id: 1355,
                 name: 'British Airways',
-                type: 'airline'
             },
             {
                 callsign: 'AIRLINAIR',
                 country: 'France',
                 iata: 'A5',
                 icao: 'RLA',
-                id: 1203,
                 name: 'Airlinair',
-                type: 'airline'
             },
             {
                 callsign: 'STARWAY',
                 country: 'France',
                 iata: 'SE',
                 icao: 'SEU',
-                id: 5479,
                 name: 'XL Airways France',
-                type: 'airline'
             },
             {
                 callsign: 'TWINJET',
                 country: 'France',
                 iata: 'T7',
                 icao: 'TJT',
-                id: 4965,
                 name: 'Twin Jet',
-                type: 'airline'
             },
             {
                 callsign: 'EASY',
                 country: 'United Kingdom',
                 iata: 'U2',
                 icao: 'EZY',
-                id: 2297,
                 name: 'easyJet',
-                type: 'airline'
             },
             {
                 callsign: 'AMERICAN',
                 country: 'United States',
                 iata: 'AA',
                 icao: 'AAL',
-                id: 24,
                 name: 'American Airlines',
-                type: 'airline'
             },
             {
                 callsign: 'CORSICA',
                 country: 'France',
                 iata: 'XK',
                 icao: 'CCM',
-                id: 1909,
                 name: 'Corse-Mediterranee',
-                type: 'airline'
             }
             ];
 
@@ -95,7 +80,14 @@ describe('GET /api/v1/airline/to-airport', () => {
         expect(response.headers.get('Content-Type')).toBe('application/json');
 
         const fetchedAirlines = await response.json();
-        expect(fetchedAirlines).toEqual(expectedAirlines);
+
+        for (let i = 0; i < expectedAirlines.length; i++) {
+            expect(fetchedAirlines[i].callsign).toBe(expectedAirlines[i].callsign);
+            expect(fetchedAirlines[i].country).toBe(expectedAirlines[i].country);
+            expect(fetchedAirlines[i].iata).toBe(expectedAirlines[i].iata);
+            expect(fetchedAirlines[i].icao).toBe(expectedAirlines[i].icao);
+            expect(fetchedAirlines[i].name).toBe(expectedAirlines[i].name);
+        }
     });
 
     it('GET: should return a 400 error when destinationAirportCode is not provided', async () => {

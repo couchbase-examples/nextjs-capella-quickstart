@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { describe, expect, it } from "vitest";
 import { GET } from './route';
+import { TAirline } from '@/app/models/Airline';
 
 describe('GET function', () => {
   it('should return a list of airlines for a given country', async () => {
@@ -19,46 +20,42 @@ describe('GET function', () => {
     expect(response.status).toBe(200);
     expect(response.headers.get('Content-Type')).toBe('application/json');
 
-    const airlines = await response.json();
-    expect(Array.isArray(airlines)).toBe(true);
-    expect(airlines.length).toBeGreaterThan(0);
+    const fetchedAirlines = await response.json();
+    expect(Array.isArray(fetchedAirlines)).toBe(true);
+    expect(fetchedAirlines.length).toBeGreaterThan(0);
 
-    expect(airlines).toContainEqual(
-      expect.objectContaining({
+    const expectedAirlines:TAirline[] = [
+      {
         callsign: 'MILE-AIR',
         country: 'United States',
         iata: 'Q5',
         icao: 'MLA',
-        id: 10,
         name: '40-Mile Air',
-        type: 'airline'
-      }),
-    );
-
-    expect(airlines).toContainEqual(
-      expect.objectContaining({
+      },
+      {
         callsign: 'TXW',
         country: 'United States',
         iata: 'TQ',
         icao: 'TXW',
-        id: 10123,
         name: 'Texas Wings',
-        type: 'airline'
-      }),
-    );
-
-    expect(airlines).toContainEqual(
-      expect.objectContaining({
+      },
+      {
         callsign: 'atifly',
         country: 'United States',
         iata: 'A1',
         icao: 'A1F',
-        id: 10226,
         name: 'Atifly',
-        type: 'airline'
-      }),
-    );
+      }
+    ]
 
+    for (let i = 0; i < expectedAirlines.length; i++) {
+      expect(fetchedAirlines[i].callsign).toBe(expectedAirlines[i].callsign);
+      expect(fetchedAirlines[i].country).toBe(expectedAirlines[i].country);
+      expect(fetchedAirlines[i].iata).toBe(expectedAirlines[i].iata);
+      expect(fetchedAirlines[i].icao).toBe(expectedAirlines[i].icao);
+      expect(fetchedAirlines[i].name).toBe(expectedAirlines[i].name);
+  }
+ 
   });
 
   it("should return an empty list when there are no airlines for the given country", async () => {

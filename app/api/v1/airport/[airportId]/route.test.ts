@@ -43,9 +43,7 @@ describe("GET /api/v1/airport/{id}", () => {
   it("it should respond with status code 200 OK and return airport as object", async () => {
     const airportId = "airport_1262"
 
-    const expectedAirport = {
-      id: 1262,
-      type: "airport",
+    const expectedAirport:TAirport = {
       airportname: "La Garenne",
       city: "Agen",
       country: "France",
@@ -66,8 +64,16 @@ describe("GET /api/v1/airport/{id}", () => {
     expect(response.status).toBe(200)
     expect(response.headers.get("Content-Type")).toBe("application/json")
 
-    const airport = await response.json()
-    expect(airport).toEqual(expectedAirport)
+    const responseBody = await response.json()
+    expect(responseBody.airportname).toBe(expectedAirport.airportname)
+    expect(responseBody.city).toBe(expectedAirport.city)
+    expect(responseBody.country).toBe(expectedAirport.country)
+    expect(responseBody.faa).toBe(expectedAirport.faa)
+    expect(responseBody.icao).toBe(expectedAirport.icao)
+    expect(responseBody.tz).toBe(expectedAirport.tz)
+    expect(responseBody.geo.lat).toBe(expectedAirport.geo.lat)
+    expect(responseBody.geo.lon).toBe(expectedAirport.geo.lon)
+    expect(responseBody.geo.alt).toBe(expectedAirport.geo.alt)
   })
 
   it("it should respond with status code 404 Not Found", async () => {
@@ -84,8 +90,6 @@ describe("GET /api/v1/airport/{id}", () => {
 describe("POST /api/v1/airport/{id}", () => {
   const airportId = "airport_post"
   const newAirport: TAirport = {
-    id: 999,
-    type: "test-airport",
     airportname: "Test Airport",
     city: "Test City",
     country: "Test Country",
@@ -159,8 +163,6 @@ describe("PUT /api/v1/airport/{id}", () => {
 
   beforeEach(async () => {
     await insertAirport(id, {
-      id: 999,
-      type: "test-airport",
       airportname: "Test Airport",
       city: "Test City",
       country: "Test Country",
@@ -176,8 +178,6 @@ describe("PUT /api/v1/airport/{id}", () => {
   })
 
   const updatedAirport: TAirport = {
-    id: 999,
-    type: "test-airport",
     airportname: "Test Airport",
     city: "Test City",
     country: "Test Country",
@@ -227,8 +227,6 @@ describe("PUT /api/v1/airport/{id}", () => {
 
 describe("DELETE /api/v1/airport/{id}", () => {
   insertAirport("airport_delete", {
-    id: 999,
-    type: "test-airport",
     airportname: "Test Airport",
     city: "Test City",
     country: "Test Country",

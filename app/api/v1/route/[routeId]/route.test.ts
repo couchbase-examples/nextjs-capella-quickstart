@@ -47,9 +47,7 @@ afterAll(async () => {
 describe("GET /api/v1/route/{id}", () => {
   const id = "route_10209"
 
-  const expectedRoute = {
-    id: 10209,
-    type: "route",
+  const expectedRoute:TRoute = {
     airline: "AH",
     airlineid: "airline_794",
     sourceairport: "MRS",
@@ -85,7 +83,14 @@ describe("GET /api/v1/route/{id}", () => {
     const responseBody = await response.json()
 
     expect(response.status).toBe(200)
-    expect(responseBody).toEqual(expectedRoute)
+    expect(responseBody.airline).toBe(expectedRoute.airline)
+    expect(responseBody.airlineid).toBe(expectedRoute.airlineid)
+    expect(responseBody.sourceairport).toBe(expectedRoute.sourceairport)
+    expect(responseBody.destinationairport).toBe(expectedRoute.destinationairport)
+    expect(responseBody.stops).toBe(expectedRoute.stops)
+    expect(responseBody.equipment).toBe(expectedRoute.equipment)
+    expect(responseBody.schedule).toEqual(expectedRoute.schedule)
+    expect(responseBody.distance).toBe(expectedRoute.distance)
   })
 
   it("should respond with status code 404 when the route ID is invalid", async () => {
@@ -103,8 +108,6 @@ describe("GET /api/v1/route/{id}", () => {
 describe("POST /api/v1/route", () => {
   const routeId = "route_post"
   const newRoute: TRoute = {
-    id: 10001,
-    type: "route",
     airline: "AF",
     airlineid: "airline_137",
     sourceairport: "TLV",
@@ -169,8 +172,6 @@ describe("PUT /api/v1/route/{id}", () => {
   // Insert route before running tests
   beforeEach(async () => {
     await insertRoute(id, {
-      id: 999,
-      type: "route",
       airline: "AF",
       airlineid: "airline_137",
       sourceairport: "TLV",
@@ -187,8 +188,6 @@ describe("PUT /api/v1/route/{id}", () => {
   })
 
   const updatedRoute: TRoute = {
-    id: 9999,
-    type: "route",
     airline: "AF",
     airlineid: "airline_137",
     sourceairport: "TLV",
@@ -241,8 +240,6 @@ describe("DELETE /api/v1/route/{id}", () => {
 
   // Insert route before running tests
   insertRoute(id, {
-    id: 10003,
-    type: "route",
     airline: "AF",
     airlineid: "airline_137",
     sourceairport: "TLV",

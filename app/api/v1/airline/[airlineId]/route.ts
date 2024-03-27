@@ -312,7 +312,7 @@ export async function DELETE(
  *       properties:
  *         callsign:
  *           type: string
- *           example: 'ABC123'
+ *           example: 'AIRFRANS'
  *         country:
  *           type: string
  *           example: 'United States'
@@ -322,15 +322,9 @@ export async function DELETE(
  *         icao:
  *           type: string
  *           example: 'AAL'
- *         id:
- *           type: number
- *           example: 1
  *         name:
  *           type: string
  *           example: 'American Airlines'
- *         type:
- *           type: string
- *           example: 'International'
  *       required:
  *         - callsign
  *         - country

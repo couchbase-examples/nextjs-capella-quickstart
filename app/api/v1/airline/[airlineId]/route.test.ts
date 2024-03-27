@@ -47,8 +47,6 @@ afterAll(async () => {
 describe("GET /api/v1/airline/{id}", () => {
   const id = "airline_10"
   const expectedAirline: TAirline = {
-    id: 10,
-    type: "airline",
     name: "40-Mile Air",
     iata: "Q5",
     icao: "MLA",
@@ -63,7 +61,11 @@ describe("GET /api/v1/airline/{id}", () => {
     const responseBody = await response.json()
 
     expect(response.status).toBe(200)
-    expect(responseBody).toEqual(expectedAirline)
+    expect(responseBody.name).toBe(expectedAirline.name)
+    expect(responseBody.iata).toBe(expectedAirline.iata)
+    expect(responseBody.icao).toBe(expectedAirline.icao)
+    expect(responseBody.callsign).toBe(expectedAirline.callsign)
+    expect(responseBody.country).toBe(expectedAirline.country)
   })
 
   it("should respond with status code 404 when the airline ID is invalid", async () => {
@@ -82,8 +84,6 @@ describe("GET /api/v1/airline/{id}", () => {
 describe("POST /api/v1/airline", () => {
   const id = "airline_post"
   const newAirline: TAirline = {
-    id: 11,
-    type: "airline",
     name: "40-Mile Air",
     iata: "Q5",
     icao: "MLA",
@@ -141,8 +141,6 @@ describe("PUT /api/v1/airline/{id}", () => {
   // Insert airline before running tests
   beforeEach(async () => {
     await insertAirline(id, {
-      id: 11,
-      type: "airline",
       name: "40-Mile Air",
       iata: "Q5",
       icao: "MLA",
@@ -152,8 +150,6 @@ describe("PUT /api/v1/airline/{id}", () => {
   })
 
   const updatedAirline: TAirline = {
-    id: 11,
-    type: "airline",
     name: "40-Mile Air",
     iata: "U5",
     icao: "UPD",
@@ -199,8 +195,6 @@ describe("DELETE /api/v1/airline/{id}", () => {
 
   // Insert airline before running tests
   insertAirline(id, {
-    id: 11,
-    type: "airline",
     name: "40-Mile Air",
     iata: "Q5",
     icao: "MLA",

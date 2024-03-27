@@ -307,12 +307,6 @@ export async function DELETE(
  *     Airport:
  *       type: object
  *       properties:
- *         id:
- *           type: number
- *           example: 1262
- *         type:
- *           type: string
- *           example: 'airport'
  *         airportname:
  *           type: string
  *           example: 'John F. Kennedy International Airport'
