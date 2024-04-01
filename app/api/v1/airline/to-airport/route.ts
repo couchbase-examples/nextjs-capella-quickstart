@@ -11,11 +11,11 @@ import { TAirline } from "@/app/models/Airline"
  *     summary: Get airlines flying to a destination airport
  *     description: |
  *       Get list of Airlines flying to a destination airport.
- *    
+ *
  *       This provides an example of using SQL++ query in Couchbase to fetch a list of documents matching the specified criteria.
- * 
- *       Code: [`app/api/v1/airline/to-airport/route.ts`]  
- * 
+ *
+ *       Code: [`app/api/v1/airline/to-airport/route.ts`]
+ *
  *       Method: `GET`
  *     tags:
  *        - Airline
@@ -47,14 +47,12 @@ import { TAirline } from "@/app/models/Airline"
  *       500:
  *         description: An error occurred while fetching airlines
  */
-export async function GET(
-  req: NextRequest,
-) {
+export async function GET(req: NextRequest) {
   try {
-
     const { scope } = await getDatabase()
 
-    const destinationAirportCode = req.nextUrl.searchParams.get("destinationAirportCode") ?? ""
+    const destinationAirportCode =
+      req.nextUrl.searchParams.get("destinationAirportCode") ?? ""
     const limit = req.nextUrl.searchParams.get("limit") ?? 10
     const offset = req.nextUrl.searchParams.get("offset") ?? 0
 
@@ -105,6 +103,7 @@ export async function GET(
     const airlines: TAirline[] = result.rows
     return NextResponse.json(airlines, { status: 200 })
   } catch (error) {
+    console.log(error)
     return NextResponse.json(
       { message: "Failed to fetch airlines" },
       { status: 500 }

@@ -11,11 +11,11 @@ import { TAirline } from "@/app/models/Airline"
  *     summary: Get all airlines by country
  *     description: |
  *       Get list of Airlines. Optionally, you can filter the list by Country.
- *       
+ *
  *       This provides an example of using SQL++ query in Couchbase to fetch a list of documents matching the specified criteria.
- *       
- *       Code: [`app/api/v1/airline/list/route.ts`]  
- * 
+ *
+ *       Code: [`app/api/v1/airline/list/route.ts`]
+ *
  *       Method: `GET`
  *     tags:
  *       - Airline
@@ -47,9 +47,7 @@ import { TAirline } from "@/app/models/Airline"
  *       500:
  *         description: An error occurred while fetching airlines
  */
-export async function GET(
-  req: NextRequest,
-) {
+export async function GET(req: NextRequest) {
   try {
     const { scope } = await getDatabase()
     const country = req.nextUrl.searchParams.get("country") ?? ""
@@ -112,6 +110,7 @@ export async function GET(
 
     return NextResponse.json(airlines, { status: 200 })
   } catch (error) {
+    console.log(error)
     return NextResponse.json(
       {
         message: "An error occurred while fetching airlines",

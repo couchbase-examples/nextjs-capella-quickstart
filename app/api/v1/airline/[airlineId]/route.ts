@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
+import { DocumentExistsError, DocumentNotFoundError } from "couchbase"
+import { ZodError } from "zod"
 
 import { getDatabase } from "@/lib/couchbase-connection"
-import { TAirline, AirlineSchema } from "@/app/models/Airline"
-import { DocumentNotFoundError, DocumentExistsError } from 'couchbase';
-
-import { ZodError } from "zod";
+import { AirlineSchema, TAirline } from "@/app/models/Airline"
 
 /**
  * @swagger
@@ -13,13 +12,13 @@ import { ZodError } from "zod";
  *     summary: Get an airline by ID
  *     description: |
  *       Get Airline with specified ID.
- *       
+ *
  *       This provides an example of using [Key Value operations](https://docs.couchbase.com/nodejs-sdk/current/howtos/kv-operations.html) in Couchbase to get a document with specified ID.
- *       
+ *
  *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
- *       
- *       Code: `airline/[airlineId]/route.ts` 
- * 
+ *
+ *       Code: `airline/[airlineId]/route.ts`
+ *
  *       Method: `GET`
  *     tags:
  *        - Airline
@@ -54,6 +53,7 @@ export async function GET(
     const airline = await airlineCollection.get(airlineId)
     return NextResponse.json(airline.content as TAirline, { status: 200 })
   } catch (error) {
+    console.log(error)
     if (error instanceof DocumentNotFoundError) {
       return NextResponse.json(
         { message: "Airline not found", error: "Airline not found" },
@@ -77,13 +77,13 @@ export async function GET(
  *     summary: Create an airline
  *     description: |
  *       Create an airline with specified ID.
- *       
+ *
  *       This provides an example of using [Key Value operations](https://docs.couchbase.com/nodejs-sdk/current/howtos/kv-operations.html) in Couchbase to create a document with specified ID.
- *       
+ *
  *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
- *       
- *       Code: `airline/[airlineId]/route.ts`  
- * 
+ *
+ *       Code: `airline/[airlineId]/route.ts`
+ *
  *       Method: `POST`
  *     tags:
  *        - Airline
@@ -125,13 +125,11 @@ export async function POST(
     const parsedAirlineData = AirlineSchema.parse(airlineData)
     const { airlineCollection } = await getDatabase()
 
-    await airlineCollection.insert(
-      airlineId,
-      parsedAirlineData
-    )
+    await airlineCollection.insert(airlineId, parsedAirlineData)
 
     return NextResponse.json(parsedAirlineData, { status: 201 })
   } catch (error) {
+    console.log(error)
     if (error instanceof DocumentExistsError) {
       return NextResponse.json(
         {
@@ -167,13 +165,13 @@ export async function POST(
  *     summary: Update an airline
  *     description: |
  *       Update an airline with specified ID.
- *       
+ *
  *       This provides an example of using [Key Value operations](https://docs.couchbase.com/nodejs-sdk/current/howtos/kv-operations.html) in Couchbase to update a document with specified ID.
- *       
+ *
  *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
- *       
- *       Code: `airline/[airlineId]/route.ts`  
- * 
+ *
+ *       Code: `airline/[airlineId]/route.ts`
+ *
  *       Method: `PUT`
  *     tags:
  *        - Airline
@@ -213,13 +211,10 @@ export async function PUT(
     const parsedAirlineData = AirlineSchema.parse(airlineData)
     const { airlineCollection } = await getDatabase()
 
-    await airlineCollection.upsert(
-      airlineId,
-      parsedAirlineData
-    )
-    return NextResponse.json({ parsedAirlineData }, { status: 200 }
-    )
+    await airlineCollection.upsert(airlineId, parsedAirlineData)
+    return NextResponse.json({ parsedAirlineData }, { status: 200 })
   } catch (error) {
+    console.log(error)
     if (error instanceof ZodError) {
       return NextResponse.json(
         { message: "Invalid request body", error: error.errors },
@@ -229,7 +224,7 @@ export async function PUT(
       return NextResponse.json(
         {
           message: "An error occurred while updating airline",
-          error: "An error occurred while updating airline"
+          error: "An error occurred while updating airline",
         },
         { status: 500 }
       )
@@ -244,13 +239,13 @@ export async function PUT(
  *     summary: Delete an airline
  *     description: |
  *       Delete an airline with specified ID.
- *       
+ *
  *       This provides an example of using [Key Value operations](https://docs.couchbase.com/nodejs-sdk/current/howtos/kv-operations.html) in Couchbase to delete a document with specified ID.
- *       
+ *
  *       Key Value operations are unique to Couchbase and provide very high-speed get/set/delete operations.
- *       
- *       Code: `airline/[airlineId]/route.ts`  
- * 
+ *
+ *       Code: `airline/[airlineId]/route.ts`
+ *
  *       Method: `DELETE`
  *     tags:
  *        - Airline
@@ -284,6 +279,7 @@ export async function DELETE(
       { status: 202 }
     )
   } catch (error) {
+    console.log(error)
     if (error instanceof DocumentNotFoundError) {
       return NextResponse.json(
         {

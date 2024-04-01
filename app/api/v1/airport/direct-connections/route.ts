@@ -10,11 +10,11 @@ import { getDatabase } from "@/lib/couchbase-connection"
  *     summary: Get all direct connections from a target airport
  *     description: |
  *       Returns a list of airports with direct connections from the target airport.
- *       
+ *
  *       This provides an example of using SQL++ query in Couchbase to fetch a list of documents matching the specified criteria.
- * 
- *       Code: [`app/api/v1/airport/direct-connections/route.ts`]  
- * 
+ *
+ *       Code: [`app/api/v1/airport/direct-connections/route.ts`]
+ *
  *       Method: `GET`
  *     tags:
  *       - Airport
@@ -46,12 +46,12 @@ import { getDatabase } from "@/lib/couchbase-connection"
  *       500:
  *         description: An error occurred while fetching airports
  */
-export async function GET(
-  req: NextRequest,
-) {
+export async function GET(req: NextRequest) {
   try {
     const { scope } = await getDatabase()
-    const destinationAirportCode = req.nextUrl.searchParams.get("destinationAirportCode")
+    const destinationAirportCode = req.nextUrl.searchParams.get(
+      "destinationAirportCode"
+    )
     const limit = req.nextUrl.searchParams.get("limit") ?? 10
     const offset = req.nextUrl.searchParams.get("offset") ?? 0
 
@@ -81,10 +81,13 @@ export async function GET(
     }
 
     const result: QueryResult = await scope.query(query, options)
-    const connections: string[] = result.rows.map((row) => row.destinationairport)
+    const connections: string[] = result.rows.map(
+      (row) => row.destinationairport
+    )
 
     return NextResponse.json(connections, { status: 200 })
   } catch (error) {
+    console.log(error)
     return NextResponse.json(
       {
         message: "An error occurred while fetching connections",
