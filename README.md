@@ -23,13 +23,15 @@ To run this prebuilt project, you will need:
   If travel-sample is not loaded in your Capella cluster, you can load it by following the instructions for your Capella Cluster:
   - [Load travel-sample bucket in Couchbase Capella](https://docs.couchbase.com/cloud/clusters/data-service/import-data-documents.html#import-sample-data)
 
-## Similar Quickstart Repos
+## Similar Quickstart Repositories
 
-If you are looking for a quickstart using Node.js, you can find it in this [repo](https://github.com/couchbase-examples/nodejs-quickstart.git)
+This quickstart examples demonstrates creating REST API using NodeJS, however,  quickstart is also available in following flavors and variants of javascript:
 
-If you are looking for a quickstart using TypeScript, you can find it in this [repo](https://github.com/couchbase-examples/typescript-quickstart.git)
+[TypeScript REST API quickstart](https://github.com/couchbase-examples/typescript-quickstart.git)
 
-If you are looking for a quickstart using Ottoman.js, you can find it in this [repo](https://github.com/couchbase-examples/ottomanjs-quickstart)
+[Node.js REST API quickstart](https://github.com/couchbase-examples/nodejs-quickstart.git)
+
+[Ottoman quickstart](https://github.com/couchbase-examples/ottomanjs-quickstart) (Couchbase node based ODM - learn more [Ottoman](https://ottomanjs.com/) here)
 
 ## App Setup
 
