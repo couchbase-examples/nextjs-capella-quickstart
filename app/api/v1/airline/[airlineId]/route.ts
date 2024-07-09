@@ -53,7 +53,7 @@ export async function GET(
     const airline = await airlineCollection.get(airlineId)
     return NextResponse.json(airline.content as TAirline, { status: 200 })
   } catch (error) {
-    console.log(error)
+
     if (error instanceof DocumentNotFoundError) {
       return NextResponse.json(
         { message: "Airline not found", error: "Airline not found" },
@@ -129,7 +129,7 @@ export async function POST(
 
     return NextResponse.json(parsedAirlineData, { status: 201 })
   } catch (error) {
-    console.log(error)
+
     if (error instanceof DocumentExistsError) {
       return NextResponse.json(
         {
@@ -147,7 +147,7 @@ export async function POST(
         { status: 400 }
       )
     } else {
-      console.log(error)
+
       return NextResponse.json(
         {
           message: "An error occurred while creating airline",
@@ -214,7 +214,7 @@ export async function PUT(
     await airlineCollection.upsert(airlineId, parsedAirlineData)
     return NextResponse.json({ parsedAirlineData }, { status: 200 })
   } catch (error) {
-    console.log(error)
+
     if (error instanceof ZodError) {
       return NextResponse.json(
         { message: "Invalid request body", error: error.errors },
@@ -279,7 +279,7 @@ export async function DELETE(
       { status: 202 }
     )
   } catch (error) {
-    console.log(error)
+
     if (error instanceof DocumentNotFoundError) {
       return NextResponse.json(
         {

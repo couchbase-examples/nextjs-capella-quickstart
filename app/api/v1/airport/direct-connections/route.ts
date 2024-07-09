@@ -87,7 +87,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(connections, { status: 200 })
   } catch (error) {
-    console.log(error)
+    
     return NextResponse.json(
       {
         message: "An error occurred while fetching connections",

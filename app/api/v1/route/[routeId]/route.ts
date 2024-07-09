@@ -53,7 +53,7 @@ export async function GET(
     const route = await routeCollection.get(routeId)
     return NextResponse.json(route.content as TRoute, { status: 200 })
   } catch (error) {
-    console.log(error)
+    
     if (error instanceof DocumentNotFoundError) {
       return NextResponse.json(
         { message: "Route not found", error: "Route not found" },
@@ -129,7 +129,7 @@ export async function POST(
     await routeCollection.insert(routeId, parsedRouteData)
     return NextResponse.json(parsedRouteData, { status: 201 })
   } catch (error) {
-    console.log(error)
+    
     if (error instanceof DocumentExistsError) {
       return NextResponse.json(
         {
@@ -213,7 +213,7 @@ export async function PUT(
     await routeCollection.upsert(routeId, parsedRouteData)
     return NextResponse.json({ parsedRouteData }, { status: 200 })
   } catch (error) {
-    console.log(error)
+    
     if (error instanceof ZodError) {
       return NextResponse.json(
         { message: "Invalid request body", error: error.errors },
@@ -277,7 +277,7 @@ export async function DELETE(
       { status: 202 }
     )
   } catch (error) {
-    console.log(error)
+    
     if (error instanceof DocumentNotFoundError) {
       return NextResponse.json(
         {

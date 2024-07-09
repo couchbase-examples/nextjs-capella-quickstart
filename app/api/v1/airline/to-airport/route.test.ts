@@ -9,73 +9,88 @@ describe('GET /api/v1/airline/to-airport', () => {
         const req = {
             nextUrl: {
                 searchParams: new URLSearchParams({
-                    destinationAirportCode: 'MRS',
+                    destinationAirportCode: 'JFK',
                     limit: '10',
                     offset: '0',
                 }),
             },
         };
-        const expectedAirlines:TAirline[] =
-            [{
-                callsign: "AIRFRANS",
-                country: 'France',
-                iata: 'AF',
-                icao: 'AFR',
-                name: 'Air France',
-            },
-            {
-                callsign: 'SPEEDBIRD',
-                country: 'United Kingdom',
-                iata: 'BA',
-                icao: 'BAW',
-                name: 'British Airways',
-            },
-            {
-                callsign: 'AIRLINAIR',
-                country: 'France',
-                iata: 'A5',
-                icao: 'RLA',
-                name: 'Airlinair',
-            },
-            {
-                callsign: 'STARWAY',
-                country: 'France',
-                iata: 'SE',
-                icao: 'SEU',
-                name: 'XL Airways France',
-            },
-            {
-                callsign: 'TWINJET',
-                country: 'France',
-                iata: 'T7',
-                icao: 'TJT',
-                name: 'Twin Jet',
-            },
-            {
-                callsign: 'EASY',
-                country: 'United Kingdom',
-                iata: 'U2',
-                icao: 'EZY',
-                name: 'easyJet',
-            },
-            {
-                callsign: 'AMERICAN',
-                country: 'United States',
-                iata: 'AA',
-                icao: 'AAL',
-                name: 'American Airlines',
-            },
-            {
-                callsign: 'CORSICA',
-                country: 'France',
-                iata: 'XK',
-                icao: 'CCM',
-                name: 'Corse-Mediterranee',
-            }
+        const expectedAirlines: TAirline[] =
+            [
+                {
+                    callsign: 'SPEEDBIRD',
+                    country: 'United Kingdom',
+                    iata: 'BA',
+                    icao: 'BAW',
+                    name: 'British Airways',
+                },
+                {
+                    callsign: 'AIRFRANS',
+                    country: 'France',
+                    iata: 'AF',
+                    icao: 'AFR',
+                    name: 'Air France',
+                },
+                {
+                    callsign: 'DELTA',
+                    country: 'United States',
+                    iata: 'DL',
+                    icao: 'DAL',
+                    name: 'Delta Air Lines',
+                },
+                {
+                    callsign: 'AMERICAN',
+                    country: 'United States',
+                    iata: 'AA',
+                    icao: 'AAL',
+                    name: 'American Airlines',
+                },
+                {
+                    callsign: 'HAWAIIAN',
+                    country: 'United States',
+                    iata: 'HA',
+                    icao: 'HAL',
+                    name: 'Hawaiian Airlines',
+                },
+                {
+                    callsign: 'JETBLUE',
+                    country: 'United States',
+                    iata: 'B6',
+                    icao: 'JBU',
+                    name: 'JetBlue Airways',
+                },
+                {
+                    callsign: 'FLAGSHIP',
+                    country: 'United States',
+                    iata: '9E',
+                    icao: 'FLG',
+                    name: 'Pinnacle Airlines',
+                },
+                {
+                    callsign: 'SUN COUNTRY',
+                    country: 'United States',
+                    iata: 'SY',
+                    icao: 'SCX',
+                    name: 'Sun Country Airlines',
+                },
+                {
+                    callsign: 'UNITED',
+                    country: 'United States',
+                    iata: 'UA',
+                    icao: 'UAL',
+                    name: 'United Airlines',
+                },
+                {
+                    callsign: 'U S AIR',
+                    country: 'United States',
+                    iata: 'US',
+                    icao: 'USA',
+                    name: 'US Airways',
+                },
             ];
 
-        const response = await GET(req as NextRequest);
 
+        const response = await GET(req as NextRequest);
         expect(response.status).toBe(200);
         expect(response.headers.get('Content-Type')).toBe('application/json');
 

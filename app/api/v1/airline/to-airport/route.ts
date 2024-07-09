@@ -103,7 +103,7 @@ export async function GET(req: NextRequest) {
     const airlines: TAirline[] = result.rows
     return NextResponse.json(airlines, { status: 200 })
   } catch (error) {
-    console.log(error)
+    
     return NextResponse.json(
       { message: "Failed to fetch airlines" },
       { status: 500 }

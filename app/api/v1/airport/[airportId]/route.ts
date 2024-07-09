@@ -53,7 +53,7 @@ export async function GET(
     const airport = await airportCollection.get(airportId)
     return NextResponse.json(airport.content as TAirport, { status: 200 })
   } catch (error) {
-    console.log(error)
+    
     if (error instanceof DocumentNotFoundError) {
       return NextResponse.json(
         { message: "Airport not found", error: "Airport not found" },
@@ -129,7 +129,7 @@ export async function POST(
     await airportCollection.insert(airportId, parsedAirportData)
     return NextResponse.json(parsedAirportData, { status: 201 })
   } catch (error) {
-    console.log(error)
+    
     if (error instanceof DocumentExistsError) {
       return NextResponse.json(
         {
@@ -213,7 +213,7 @@ export async function PUT(
     await airportCollection.upsert(airportId, parsedAirportData)
     return NextResponse.json({ parsedAirportData }, { status: 200 })
   } catch (error) {
-    console.log(error)
+    
     if (error instanceof ZodError) {
       return NextResponse.json(
         { message: "Invalid request body", error: error.errors },
@@ -277,7 +277,7 @@ export async function DELETE(
       { status: 202 }
     )
   } catch (error) {
-    console.log(error)
+    
     if (error instanceof DocumentNotFoundError) {
       return NextResponse.json(
         {
