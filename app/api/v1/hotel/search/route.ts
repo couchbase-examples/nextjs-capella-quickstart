@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
     const query = `
       SELECT * FROM hotel WHERE name LIKE $NAME limit $LIMIT offset $OFFSET
     `;
-    
+
     const { scope } = await getDatabase();
     const options = {
       parameters: {
