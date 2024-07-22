@@ -1,9 +1,8 @@
 // app/api/v1/hotel/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { QueryResult } from 'couchbase';
+import { THotel } from '@/app/models/Hotel';
 import { getDatabase } from '@/lib/couchbase-connection';
-import { HotelSchema, THotel } from '@/app/models/Hotel';
-import { z } from 'zod';
+import { SearchQuery, SearchResult } from 'couchbase';
+import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * @swagger
@@ -11,9 +10,9 @@ import { z } from 'zod';
  *   get:
  *     summary: Filter hotels by various criteria
  *     description: |
- *       Filter hotels by various criteria such as country, city, etc.
+ *       Filter hotels by various criteria such as country, city, etc. using Full Text Search.
  *
- *       This provides an example of using SQL++ query in Couchbase to fetch a list of documents matching the specified criteria.
+ *       This provides an example of using Full Text Search in Couchbase to fetch a list of documents matching the specified criteria.
  *
  *       Code: [`app/api/v1/hotel/route.ts`]
  *
@@ -82,61 +81,117 @@ import { z } from 'zod';
 export async function GET(req: NextRequest) {
     try {
         const searchParams = Object.fromEntries(req.nextUrl.searchParams.entries());
-        const parsedParams = HotelSchema.parse(searchParams);
 
-        let query = `SELECT * FROM hotel WHERE 1=1`;
-        const options: { parameters: { [key: string]: string | number } } = {
-            parameters: {},
+        const queries = [];
+
+        if (searchParams.name) {
+            queries.push(SearchQuery.match(searchParams.name).field('name'));
+        }
+        if (searchParams.title) {
+            queries.push(SearchQuery.match(searchParams.title).field('title'));
+        }
+        if (searchParams.description) {
+            queries.push(SearchQuery.match(searchParams.description).field('description'));
+        }
+        if (searchParams.country) {
+            queries.push(SearchQuery.match(searchParams.country).field('country'));
+        }
+        if (searchParams.city) {
+            queries.push(SearchQuery.match(searchParams.city).field('city'));
+        }
+        if (searchParams.state) {
+            queries.push(SearchQuery.match(searchParams.state).field('state'));
+        }
+
+        const conjunctsQuery = SearchQuery.conjuncts(...queries);
+        const offset = parseInt(searchParams.offset ?? '0');
+        const limit = parseInt(searchParams.limit ?? '10');
+        const options = {
+            limit,
+            skip: offset,
+            fields: ['*'],
         };
 
-        if (parsedParams.name) {
-            query += ` AND name = $NAME`;
-            options.parameters['NAME'] = `${parsedParams.name}`;
-        }
-        if (parsedParams.title) {
-            query += ` AND title = $TITLE`;
-            options.parameters['TITLE'] = `${parsedParams.title}`;
-        }
-        if (parsedParams.description) {
-            query += ` AND description = $DESCRIPTION`;
-            options.parameters['DESCRIPTION'] = `${parsedParams.description}`;
-        }
-        if (parsedParams.country) {
-            query += ` AND country = $COUNTRY`;
-            options.parameters['COUNTRY'] = `${parsedParams.country}`;
-        }
-        if (parsedParams.city) {
-            query += ` AND city = $CITY`;
-            options.parameters['CITY'] = `${parsedParams.city}`;
-        }
-        if (parsedParams.state) {
-            query += ` AND state = $STATE`;
-            options.parameters['STATE'] = `${parsedParams.state}`;
-        }
+        const { cluster } = await getDatabase();
+        const result: SearchResult = await cluster.searchQuery('hotel_search', conjunctsQuery, options);
 
-        const offset = searchParams.offset ?? 0;
-        const limit = searchParams.limit ?? 10;
-        query += ` limit $LIMIT offset $OFFSET`;
-        options.parameters['LIMIT'] = Number(limit);
-        options.parameters['OFFSET'] = Number(offset);
-
-        const { scope } = await getDatabase();
-        console.log(query);
-        console.log(options);
-        const result: QueryResult = await scope.query(query, options);
-        const hotels: THotel[] = result.rows.map((row) => row.hotel);
+        const hotels: THotel[] = result.rows.map((row) => {
+            return {
+                id: row.id,
+                name: row.fields?.name,
+                title: row.fields?.title,
+                description: row.fields?.description,
+                country: row.fields?.country,
+                city: row.fields?.city,
+                state: row.fields?.state,
+            };
+        });
 
         return NextResponse.json(hotels, { status: 200 });
     } catch (error) {
-        if (error instanceof z.ZodError) {
-            return NextResponse.json(
-                { error: 'Invalid request parameters', message: error.errors },
-                { status: 400 }
-            );
-        }
         return NextResponse.json(
             { error: 'Internal server error', message: (error as Error).message },
             { status: 500 }
         );
     }
 }
+// export async function GET(req: NextRequest) {
+//     try {
+//         const searchParams = Object.fromEntries(req.nextUrl.searchParams.entries());
+//         const parsedParams = HotelSchema.parse(searchParams);
+
+//         let query = `SELECT * FROM hotel WHERE 1=1`;
+//         const options: { parameters: { [key: string]: string | number } } = {
+//             parameters: {},
+//         };
+
+//         if (parsedParams.name) {
+//             query += ` AND name = $NAME`;
+//             options.parameters['NAME'] = `${parsedParams.name}`;
+//         }
+//         if (parsedParams.title) {
+//             query += ` AND title = $TITLE`;
+//             options.parameters['TITLE'] = `${parsedParams.title}`;
+//         }
+//         if (parsedParams.description) {
+//             query += ` AND description = $DESCRIPTION`;
+//             options.parameters['DESCRIPTION'] = `${parsedParams.description}`;
+//         }
+//         if (parsedParams.country) {
+//             query += ` AND country = $COUNTRY`;
+//             options.parameters['COUNTRY'] = `${parsedParams.country}`;
+//         }
+//         if (parsedParams.city) {
+//             query += ` AND city = $CITY`;
+//             options.parameters['CITY'] = `${parsedParams.city}`;
+//         }
+//         if (parsedParams.state) {
+//             query += ` AND state = $STATE`;
+//             options.parameters['STATE'] = `${parsedParams.state}`;
+//         }
+
+//         const offset = searchParams.offset ?? 0;
+//         const limit = searchParams.limit ?? 10;
+//         query += ` limit $LIMIT offset $OFFSET`;
+//         options.parameters['LIMIT'] = Number(limit);
+//         options.parameters['OFFSET'] = Number(offset);
+
+//         const { scope } = await getDatabase();
+
+//         const result: QueryResult = await scope.query(query, options);
+//         const hotels: THotel[] = result.rows.map((row) => row.hotel);
+
+//         return NextResponse.json(hotels, { status: 200 });
+//     } catch (error) {
+//         if (error instanceof z.ZodError) {
+//             return NextResponse.json(
+//                 { error: 'Invalid request parameters', message: error.errors },
+//                 { status: 400 }
+//             );
+//         }
+//         return NextResponse.json(
+//             { error: 'Internal server error', message: (error as Error).message },
+//             { status: 500 }
+//         );
+//     }
+// }

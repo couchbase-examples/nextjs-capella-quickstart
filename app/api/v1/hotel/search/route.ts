@@ -1,7 +1,5 @@
-// app/api/v1/hotel/route.ts
-import { THotel } from '@/app/models/Hotel';
 import { getDatabase } from '@/lib/couchbase-connection';
-import { QueryResult } from 'couchbase';
+import { SearchQuery, SearchResult } from 'couchbase';
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
@@ -10,11 +8,11 @@ import { NextRequest, NextResponse } from 'next/server';
  *   get:
  *     summary: Search hotels by name
  *     description: |
- *       Search hotels by name.
+ *       Search hotels by name using Full Text Search.
  *
- *       This provides an example of using SQL++ query in Couchbase to fetch a list of documents matching the specified criteria.
+ *       This provides an example of using Full Text Search in Couchbase to fetch a list of documents matching the specified criteria.
  *
- *       Code: [`app/api/v1/hotel/route.ts`]
+ *       Code: [`api/v1/hotel/search/route.ts`]
  *
  *       Method: `GET`
  *     tags:
@@ -26,6 +24,20 @@ import { NextRequest, NextResponse } from 'next/server';
  *         required: true
  *         schema:
  *           type: string
+ *       - name: limit
+ *         in: query
+ *         description: Maximum number of results to return
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *       - name: offset
+ *         in: query
+ *         description: Number of results to skip for pagination
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 0
  *     responses:
  *       200:
  *         description: A list of hotels matching the name
@@ -38,27 +50,21 @@ export async function GET(req: NextRequest) {
   try {
     const searchParams = new URLSearchParams(req.nextUrl.search);
     const name = searchParams.get('name');
-    const offset = searchParams.get('offset') ?? 0;
-    const limit = searchParams.get('limit') ?? 10;
+    const offset = parseInt(searchParams.get('offset') ?? '0');
+    const limit = parseInt(searchParams.get('limit') ?? '10');
 
     if (!name) {
-      return NextResponse.json({ error: "name query parameter is required" }, { status: 400 });
+      return NextResponse.json({ error: 'name query parameter is required' }, { status: 400 });
     }
 
-    const query = `
-      SELECT * FROM hotel WHERE name LIKE $NAME limit $LIMIT offset $OFFSET
-    `;
+    const { cluster } = await getDatabase();
+    const result: SearchResult = await cluster.searchQuery('hotel_search', SearchQuery.match(name).field('name'), {
+      limit: limit,
+      skip: offset,
+      fields: ['*']
+    });
 
-    const { scope } = await getDatabase();
-    const options = {
-      parameters: {
-        NAME: `%${name}%`,
-        LIMIT: Number(limit),
-        OFFSET: Number(offset),
-      },
-    };
-    const result: QueryResult = await scope.query(query, options);
-    const hotels: THotel[] = result.rows.map((row) => row.hotel);
+    const hotels = result.rows.map((row) => row.fields);
 
     return NextResponse.json(hotels, { status: 200 });
   } catch (error) {
@@ -68,3 +74,38 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+// export async function GET(req: NextRequest) {
+//   try {
+//     const searchParams = new URLSearchParams(req.nextUrl.search);
+//     const name = searchParams.get('name');
+//     const offset = searchParams.get('offset') ?? 0;
+//     const limit = searchParams.get('limit') ?? 10;
+
+//     if (!name) {
+//       return NextResponse.json({ error: "name query parameter is required" }, { status: 400 });
+//     }
+
+//     const query = `
+//       SELECT * FROM hotel WHERE name LIKE $NAME limit $LIMIT offset $OFFSET
+//     `;
+
+//     const { scope } = await getDatabase();
+//     const options = {
+//       parameters: {
+//         NAME: `%${name}%`,
+//         LIMIT: Number(limit),
+//         OFFSET: Number(offset),
+//       },
+//     };
+//     const result: QueryResult = await scope.query(query, options);
+//     const hotels: THotel[] = result.rows.map((row) => row.hotel);
+
+//     return NextResponse.json(hotels, { status: 200 });
+//   } catch (error) {
+//     return NextResponse.json(
+//       { error: 'Internal server error', message: (error as Error).message },
+//       { status: 500 }
+//     );
+//   }
+// }
