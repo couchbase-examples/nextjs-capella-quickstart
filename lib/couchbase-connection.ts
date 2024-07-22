@@ -36,6 +36,7 @@ interface DbConnection {
   airlineCollection: couchbase.Collection
   airportCollection: couchbase.Collection
   routeCollection: couchbase.Collection
+  hotelCollection: couchbase.Collection
 }
 
 let cachedDbConnection: DbConnection | null = null
@@ -76,6 +77,7 @@ async function connectToDatabase(): Promise<DbConnection> {
   const airlineCollection = scope.collection("airline")
   const airportCollection = scope.collection("airport")
   const routeCollection = scope.collection("route")
+  const hotelCollection = scope.collection("hotel")
 
   const dbConnection: DbConnection = {
     cluster,
@@ -84,6 +86,7 @@ async function connectToDatabase(): Promise<DbConnection> {
     airlineCollection,
     airportCollection,
     routeCollection,
+    hotelCollection,
   }
   cachedDbConnection = dbConnection
   return dbConnection
