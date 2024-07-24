@@ -48,17 +48,17 @@ import { NextRequest, NextResponse } from 'next/server';
  */
 export async function GET(req: NextRequest) {
   try {
-    const searchParams = new URLSearchParams(req.nextUrl.search);
-    const name = searchParams.get('name');
-    const offset = parseInt(searchParams.get('offset') ?? '0');
-    const limit = parseInt(searchParams.get('limit') ?? '10');
+    const { cluster } = await getDatabase();
+
+    const name = req.nextUrl.searchParams.get('name') ?? '';
+    const offset = parseInt(req.nextUrl.searchParams.get('offset') ?? '0');
+    const limit = parseInt(req.nextUrl.searchParams.get('limit') ?? '10');
 
     if (!name) {
       return NextResponse.json({ error: 'name query parameter is required' }, { status: 400 });
     }
 
-    const { cluster } = await getDatabase();
-    const result: SearchResult = await cluster.searchQuery('hotel_search', SearchQuery.match(name).field('name'), {
+    const result: SearchResult = await cluster.searchQuery('hotel_search', SearchQuery.prefix(name.toLowerCase()).field('name'), {
       limit: limit,
       skip: offset,
       fields: ['*']
