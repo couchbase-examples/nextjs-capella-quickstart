@@ -1,4 +1,7 @@
+import chalk from "chalk";
 import * as couchbase from "couchbase"
+import fs from "fs";
+import path from "path";
 
 const DB_USERNAME: string = process.env.DB_USERNAME ?? "Administrator"
 const DB_PASSWORD: string = process.env.DB_PASSWORD ?? "password"
@@ -100,3 +103,57 @@ export function getDatabase(): Promise<DbConnection> {
   // If connection exists, return it
   return Promise.resolve(cachedDbConnection)
 }
+
+export async function insertFTSIndexes() {
+  try {
+    const { cluster } = await getDatabase();
+
+    const indexesFilePath = path.resolve(process.cwd(), 'hotel_search_index.json');
+    let indexesData;
+    try {
+      indexesData = fs.readFileSync(indexesFilePath, 'utf8');
+    } catch (fileError: any) {
+      if (fileError.code === 'ENOENT') {
+        console.error(chalk.red(`FTS Index File not found: ${indexesFilePath}`));
+        return;
+      }
+      throw fileError;
+    }
+
+    let indexes;
+    try {
+      indexes = JSON.parse(indexesData);
+      if (!Array.isArray(indexes)) {
+        indexes = [indexes]; // Wrap single object in an array
+      }
+    } catch (parseError: any) {
+      console.error(chalk.red('Error parsing FTS index file:', parseError.message));
+      return;
+    }
+
+    for (const index of indexes) {
+      const existingIndexes = await cluster.searchIndexes().getAllIndexes();
+      const indexExists = existingIndexes.some((idx) => idx.name === index.name);
+
+      if (!indexExists) {
+        try {
+          await cluster.searchIndexes().upsertIndex(index);
+          console.log(chalk.green(`Index ${index.name} created successfully.`));
+        } catch (error: any) {
+          if (error instanceof couchbase.IndexExistsError) {
+            console.log(chalk.yellow(`Index ${index.name} already exists.`));
+          } else {
+            console.error(chalk.red('Error creating index:', error.message));
+          }
+        }
+      } else {
+        console.log(chalk.yellow(`Index creation skipped: An index named "${index.name}" already exists.`));
+      }
+    }
+  } catch (error: any) {
+    console.error(chalk.red('Error inserting FTS indexes:', error.message));
+  }
+}
+
+// Call the function to insert FTS indexes
+insertFTSIndexes();
