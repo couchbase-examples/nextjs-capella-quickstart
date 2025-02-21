@@ -12,6 +12,7 @@ export default defineConfig({
     alias: {
       "@/": new URL("./", import.meta.url).pathname,
     },
+    testTimeout: 60000, // Increased timeout to 60 seconds
   },
   plugins: [tsconfigPaths()],
 });

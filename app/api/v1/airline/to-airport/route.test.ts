@@ -9,7 +9,7 @@ describe('GET /api/v1/airline/to-airport', () => {
         const req = {
             nextUrl: {
                 searchParams: new URLSearchParams({
-                    destinationAirportCode: 'JFK',
+                    destinationAirportCode: 'MRS',
                     limit: '10',
                     offset: '0',
                 }),
@@ -18,7 +18,14 @@ describe('GET /api/v1/airline/to-airport', () => {
         const expectedAirlines: TAirline[] =
             [
                 {
-                    callsign: 'SPEEDBIRD',
+                    callsign: 'AIRLINAIR',
+                    country: 'France',
+                    iata: 'A5',
+                    icao: 'RLA',
+                    name: 'Airlinair',
+                },
+                {
+                    callsign: 'SPEEDBIRD', 
                     country: 'United Kingdom',
                     iata: 'BA',
                     icao: 'BAW',
@@ -26,17 +33,24 @@ describe('GET /api/v1/airline/to-airport', () => {
                 },
                 {
                     callsign: 'AIRFRANS',
-                    country: 'France',
+                    country: 'France', 
                     iata: 'AF',
                     icao: 'AFR',
                     name: 'Air France',
                 },
                 {
-                    callsign: 'DELTA',
-                    country: 'United States',
-                    iata: 'DL',
-                    icao: 'DAL',
-                    name: 'Delta Air Lines',
+                    callsign: 'CORSICA',
+                    country: 'France',
+                    iata: 'XK',
+                    icao: 'CCM',
+                    name: 'Corse-Mediterranee',
+                },
+                {
+                    callsign: 'EASY',
+                    country: 'United Kingdom',
+                    iata: 'U2',
+                    icao: 'EZY',
+                    name: 'easyJet',
                 },
                 {
                     callsign: 'AMERICAN',
@@ -46,46 +60,18 @@ describe('GET /api/v1/airline/to-airport', () => {
                     name: 'American Airlines',
                 },
                 {
-                    callsign: 'HAWAIIAN',
-                    country: 'United States',
-                    iata: 'HA',
-                    icao: 'HAL',
-                    name: 'Hawaiian Airlines',
+                    callsign: 'TWINJET',
+                    country: 'France',
+                    iata: 'T7',
+                    icao: 'TJT',
+                    name: 'Twin Jet',
                 },
                 {
-                    callsign: 'JETBLUE',
-                    country: 'United States',
-                    iata: 'B6',
-                    icao: 'JBU',
-                    name: 'JetBlue Airways',
-                },
-                {
-                    callsign: 'FLAGSHIP',
-                    country: 'United States',
-                    iata: '9E',
-                    icao: 'FLG',
-                    name: 'Pinnacle Airlines',
-                },
-                {
-                    callsign: 'SUN COUNTRY',
-                    country: 'United States',
-                    iata: 'SY',
-                    icao: 'SCX',
-                    name: 'Sun Country Airlines',
-                },
-                {
-                    callsign: 'UNITED',
-                    country: 'United States',
-                    iata: 'UA',
-                    icao: 'UAL',
-                    name: 'United Airlines',
-                },
-                {
-                    callsign: 'U S AIR',
-                    country: 'United States',
-                    iata: 'US',
-                    icao: 'USA',
-                    name: 'US Airways',
+                    callsign: 'STARWAY',
+                    country: 'France',
+                    iata: 'SE',
+                    icao: 'SEU',
+                    name: 'XL Airways France',
                 },
             ];
 
