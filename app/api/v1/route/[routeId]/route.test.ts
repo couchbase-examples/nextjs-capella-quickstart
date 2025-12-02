@@ -19,9 +19,9 @@ const insertRoute = async (id: string, route: TRoute) => {
     await routeCollection.insert(id, route)
   } catch (error) {
     if (error instanceof DocumentExistsError) {
-      console.warn(`Route with id ${id} already exists during insertion.`)
+      // Silently ignore if document already exists
     } else {
-      console.warn(`Failed to insert route with id ${id}: ${error}`)
+      throw error
     }
   }
 }
@@ -32,9 +32,9 @@ const cleanupRoute = async (id: string) => {
     await routeCollection.remove(id)
   } catch (error) {
     if (error instanceof DocumentNotFoundError) {
-      console.warn(`Route with id ${id} does not exist during cleanup.`)
+      // Silently ignore if document doesn't exist
     } else {
-      console.warn(`Failed to remove route with id ${id}: ${error}`)
+      throw error
     }
   }
 }

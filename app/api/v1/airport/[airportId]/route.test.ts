@@ -19,9 +19,9 @@ const insertAirport = async (id: string, airport: TAirport) => {
     await airportCollection.insert(id, airport)
   } catch (error) {
     if (error instanceof DocumentExistsError) {
-      console.warn(`Airport with id ${id} already exists during insertion.`)
+      // Silently ignore if document already exists
     } else {
-      console.warn(`Error occurred while inserting airport: ${error}`)
+      throw error
     }
   }
 }
@@ -32,9 +32,9 @@ const cleanupAirport = async (id: string) => {
     await airportCollection.remove(id)
   } catch (error) {
     if (error instanceof DocumentNotFoundError) {
-      console.warn(`Airport with id ${id} does not exist during cleanup.`)
+      // Silently ignore if document doesn't exist
     } else {
-      console.warn(`Error occurred while removing airport: ${error}`)
+      throw error
     }
   }
 }

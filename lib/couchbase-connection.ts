@@ -138,16 +138,22 @@ export async function insertFTSIndexes() {
       if (!indexExists) {
         try {
           await cluster.searchIndexes().upsertIndex(index);
-          console.log(chalk.green(`Index ${index.name} created successfully.`));
+          if (process.env.NODE_ENV !== 'test') {
+            console.log(chalk.green(`Index ${index.name} created successfully.`));
+          }
         } catch (error: any) {
           if (error instanceof couchbase.IndexExistsError) {
-            console.log(chalk.yellow(`Index ${index.name} already exists.`));
+            if (process.env.NODE_ENV !== 'test') {
+              console.log(chalk.yellow(`Index ${index.name} already exists.`));
+            }
           } else {
             console.error(chalk.red('Error creating index:', error.message));
           }
         }
       } else {
-        console.log(chalk.yellow(`Index creation skipped: An index named "${index.name}" already exists.`));
+        if (process.env.NODE_ENV !== 'test') {
+          console.log(chalk.yellow(`Index creation skipped: An index named "${index.name}" already exists.`));
+        }
       }
     }
   } catch (error: any) {
