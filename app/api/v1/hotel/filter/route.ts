@@ -185,7 +185,7 @@ export async function GET(req: NextRequest) {
 //     } catch (error) {
 //         if (error instanceof z.ZodError) {
 //             return NextResponse.json(
-//                 { error: 'Invalid request parameters', message: error.errors },
+//                 { error: 'Invalid request parameters', message: error.issues },
 //                 { status: 400 }
 //             );
 //         }

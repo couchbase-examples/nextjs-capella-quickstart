@@ -44,10 +44,10 @@ import { AirportSchema, TAirport } from "@/app/models/Airport"
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { airportId: string } }
+  { params }: { params: Promise<{ airportId: string }> }
 ) {
   try {
-    const { airportId } = params
+    const { airportId } = await params
     const { airportCollection } = await getDatabase()
 
     const airport = await airportCollection.get(airportId)
@@ -118,10 +118,10 @@ export async function GET(
  */
 export async function POST(
   req: NextRequest,
-  { params }: { params: { airportId: string } }
+  { params }: { params: Promise<{ airportId: string }> }
 ) {
   try {
-    const { airportId } = params
+    const { airportId } = await params
     const airportData: TAirport = await req.json()
     const parsedAirportData = AirportSchema.parse(airportData)
     const { airportCollection } = await getDatabase()
@@ -142,7 +142,7 @@ export async function POST(
       return NextResponse.json(
         {
           message: "Invalid request body",
-          error: error.errors,
+          error: error.issues,
         },
         { status: 400 }
       )
@@ -202,10 +202,10 @@ export async function POST(
  */
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { airportId: string } }
+  { params }: { params: Promise<{ airportId: string }> }
 ) {
   try {
-    const { airportId } = params
+    const { airportId } = await params
     const airportData: TAirport = await req.json()
     const parsedAirportData = AirportSchema.parse(airportData)
     const { airportCollection } = await getDatabase()
@@ -216,7 +216,7 @@ export async function PUT(
     
     if (error instanceof ZodError) {
       return NextResponse.json(
-        { message: "Invalid request body", error: error.errors },
+        { message: "Invalid request body", error: error.issues },
         { status: 400 }
       )
     } else {
@@ -265,10 +265,10 @@ export async function PUT(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { airportId: string } }
+  { params }: { params: Promise<{ airportId: string }> }
 ) {
   try {
-    const { airportId } = params
+    const { airportId } = await params
     const { airportCollection } = await getDatabase()
 
     await airportCollection.remove(airportId)
