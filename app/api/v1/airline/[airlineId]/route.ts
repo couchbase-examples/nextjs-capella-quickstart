@@ -44,10 +44,10 @@ import { AirlineSchema, TAirline } from "@/app/models/Airline"
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { airlineId: string } }
+  { params }: { params: Promise<{ airlineId: string }> }
 ) {
   try {
-    const { airlineId } = params
+    const { airlineId } = await params
     const { airlineCollection } = await getDatabase()
 
     const airline = await airlineCollection.get(airlineId)
@@ -117,10 +117,10 @@ export async function GET(
  */
 export async function POST(
   req: NextRequest,
-  { params }: { params: { airlineId: string } }
+  { params }: { params: Promise<{ airlineId: string }> }
 ) {
   try {
-    const { airlineId } = params
+    const { airlineId } = await params
     const airlineData: TAirline = await req.json()
     const parsedAirlineData = AirlineSchema.parse(airlineData)
     const { airlineCollection } = await getDatabase()
@@ -142,7 +142,7 @@ export async function POST(
       return NextResponse.json(
         {
           message: "Invalid request body",
-          error: error.errors,
+          error: error.issues,
         },
         { status: 400 }
       )
@@ -203,10 +203,10 @@ export async function POST(
  */
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { airlineId: string } }
+  { params }: { params: Promise<{ airlineId: string }> }
 ) {
   try {
-    const { airlineId } = params
+    const { airlineId } = await params
     const airlineData: TAirline = await req.json()
     const parsedAirlineData = AirlineSchema.parse(airlineData)
     const { airlineCollection } = await getDatabase()
@@ -217,7 +217,7 @@ export async function PUT(
 
     if (error instanceof ZodError) {
       return NextResponse.json(
-        { message: "Invalid request body", error: error.errors },
+        { message: "Invalid request body", error: error.issues },
         { status: 400 }
       )
     } else {
@@ -267,10 +267,10 @@ export async function PUT(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { airlineId: string } }
+  { params }: { params: Promise<{ airlineId: string }> }
 ) {
   try {
-    const { airlineId } = params
+    const { airlineId } = await params
     const { airlineCollection } = await getDatabase()
 
     await airlineCollection.remove(airlineId)

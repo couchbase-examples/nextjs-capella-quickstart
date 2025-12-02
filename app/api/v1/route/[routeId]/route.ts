@@ -44,10 +44,10 @@ import { RouteSchema, TRoute } from "@/app/models/Route"
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { routeId: string } }
+  { params }: { params: Promise<{ routeId: string }> }
 ) {
   try {
-    const { routeId } = params
+    const { routeId } = await params
     const { routeCollection } = await getDatabase()
 
     const route = await routeCollection.get(routeId)
@@ -117,10 +117,10 @@ export async function GET(
  */
 export async function POST(
   req: NextRequest,
-  { params }: { params: { routeId: string } }
+  { params }: { params: Promise<{ routeId: string }> }
 ) {
   try {
-    const { routeId } = params
+    const { routeId } = await params
     const routeData: TRoute = await req.json()
     const parsedRouteData = RouteSchema.parse(routeData)
 
@@ -142,7 +142,7 @@ export async function POST(
       return NextResponse.json(
         {
           message: "Invalid request body",
-          error: error.errors,
+          error: error.issues,
         },
         { status: 400 }
       )
@@ -202,10 +202,10 @@ export async function POST(
  */
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { routeId: string } }
+  { params }: { params: Promise<{ routeId: string }> }
 ) {
   try {
-    const { routeId } = params
+    const { routeId } = await params
     const routeData: TRoute = await req.json()
     const parsedRouteData = RouteSchema.parse(routeData)
     const { routeCollection } = await getDatabase()
@@ -216,7 +216,7 @@ export async function PUT(
     
     if (error instanceof ZodError) {
       return NextResponse.json(
-        { message: "Invalid request body", error: error.errors },
+        { message: "Invalid request body", error: error.issues },
         { status: 400 }
       )
     } else {
@@ -265,10 +265,10 @@ export async function PUT(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { routeId: string } }
+  { params }: { params: Promise<{ routeId: string }> }
 ) {
   try {
-    const { routeId } = params
+    const { routeId } = await params
     const { routeCollection } = await getDatabase()
 
     await routeCollection.remove(routeId)
