@@ -58,7 +58,7 @@ describe("GET /api/v1/airport/{id}", () => {
     }
 
     const response = await getHandler({} as NextRequest, {
-      params: { airportId: airportId },
+      params: Promise.resolve({ airportId: airportId }),
     })
 
     expect(response.status).toBe(200)
@@ -80,7 +80,7 @@ describe("GET /api/v1/airport/{id}", () => {
     const airportId = "airport_404"
 
     const response = await getHandler({} as NextRequest, {
-      params: { airportId: airportId },
+      params: Promise.resolve({ airportId: airportId }),
     })
 
     expect(response.status).toBe(404)
@@ -108,7 +108,7 @@ describe("POST /api/v1/airport/{id}", () => {
       {
         json: async () => newAirport,
       } as NextRequest,
-      { params: { airportId } }
+      { params: Promise.resolve({ airportId }) }
     )
 
     expect(response.status).toBe(201)
@@ -124,7 +124,7 @@ describe("POST /api/v1/airport/{id}", () => {
       {
         json: async () => invalidAoportData,
       } as NextRequest,
-      { params: { airportId: airportId } }
+      { params: Promise.resolve({ airportId: airportId }) }
     )
 
     expect(response.status).toBe(400)
@@ -141,7 +141,7 @@ describe("POST /api/v1/airport/{id}", () => {
       {
         json: async () => newAirport,
       } as NextRequest,
-      { params: { airportId: airportId } }
+      { params: Promise.resolve({ airportId: airportId }) }
     )
 
     expect(response.status).toBe(409)
@@ -194,7 +194,7 @@ describe("PUT /api/v1/airport/{id}", () => {
   it("it should respond with status code 200 OK and return updated airport as object", async () => {
     const response = await putHandler(
       { json: async () => updatedAirport } as NextRequest,
-      { params: { airportId: id } }
+      { params: Promise.resolve({ airportId: id }) }
     )
 
     expect(response.status).toBe(200)
@@ -209,7 +209,7 @@ describe("PUT /api/v1/airport/{id}", () => {
     const invalidAirportData = { "invalid": "data" }
     const response = await putHandler(
       { json: async () => invalidAirportData } as NextRequest,
-      { params: { airportId: id } }
+      { params: Promise.resolve({ airportId: id }) }
     )
 
     expect(response.status).toBe(400)
@@ -243,7 +243,7 @@ describe("DELETE /api/v1/airport/{id}", () => {
   it("it should respond with status code 202 Accepted", async () => {
     const id = "airport_delete"
     const response = await deleteHandler({} as NextRequest, {
-      params: { airportId: id },
+      params: Promise.resolve({ airportId: id }),
     })
     expect(response.status).toBe(202)
   })
@@ -251,7 +251,7 @@ describe("DELETE /api/v1/airport/{id}", () => {
   it("it should respond with status code 404 Not Found", async () => {
     const id = "airport_404"
     const response = await deleteHandler({} as NextRequest, {
-      params: { airportId: id },
+      params: Promise.resolve({ airportId: id }),
     })
     expect(response.status).toBe(404)
   });

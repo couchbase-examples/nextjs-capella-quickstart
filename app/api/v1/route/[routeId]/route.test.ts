@@ -78,7 +78,7 @@ describe("GET /api/v1/route/{id}", () => {
 
   it("should respond with status code 200 OK and return route as object", async () => {
     const response = await getHandler({} as NextRequest, {
-      params: { routeId: id },
+      params: Promise.resolve({ routeId: id }),
     })
     const responseBody = await response.json()
 
@@ -96,7 +96,7 @@ describe("GET /api/v1/route/{id}", () => {
   it("should respond with status code 404 when the route ID is invalid", async () => {
     const invalidRouteId = "invalid_route_id"
     const response = await getHandler({} as NextRequest, {
-      params: { routeId: invalidRouteId },
+      params: Promise.resolve({ routeId: invalidRouteId }),
     })
     const responseBody = await response.json()
 
@@ -125,7 +125,7 @@ describe("POST /api/v1/route", () => {
   it("should respond with status code 201 Created and return route as object", async () => {
     const response = await postHandler(
       { json: async () => newRoute } as NextRequest,
-      { params: { routeId: routeId } }
+      { params: Promise.resolve({ routeId: routeId }) }
     )
     const responseBody = await response.json()
 
@@ -139,7 +139,7 @@ describe("POST /api/v1/route", () => {
 
     const response = await postHandler(
       { json: async () => invalidRequestBody } as NextRequest,
-      { params: { routeId: routeId } }
+      { params: Promise.resolve({ routeId: routeId }) }
     )
     const responseBody = await response.json()
 
@@ -152,7 +152,7 @@ describe("POST /api/v1/route", () => {
 
     const response = await postHandler(
       { json: async () => newRoute } as NextRequest,
-      { params: { routeId: routeId } }
+      { params: Promise.resolve({ routeId: routeId }) }
     )
     const responseBody = await response.json()
 
@@ -205,7 +205,7 @@ describe("PUT /api/v1/route/{id}", () => {
   it("should respond with status code 200 OK and return updated route as object", async () => {
     const response = await putHandler(
       { json: async () => updatedRoute } as NextRequest,
-      { params: { routeId: id } }
+      { params: Promise.resolve({ routeId: id }) }
     )
 
     expect(response.status).toBe(200)
@@ -221,7 +221,7 @@ describe("PUT /api/v1/route/{id}", () => {
 
     const response = await putHandler(
       { json: async () => invalidRequestBody } as NextRequest,
-      { params: { routeId: id } }
+      { params: Promise.resolve({ routeId: id }) }
     )
     const responseBody = await response.json()
 
@@ -256,7 +256,7 @@ describe("DELETE /api/v1/route/{id}", () => {
 
   it("should respond with status code 202 Accepted", async () => {
     const response = await deleteHandler({} as NextRequest, {
-      params: { routeId: id },
+      params: Promise.resolve({ routeId: id }),
     })
 
     expect(response.status).toBe(202)
@@ -265,7 +265,7 @@ describe("DELETE /api/v1/route/{id}", () => {
   it("should respond with status code 404 when the route ID is invalid", async () => {
     const invalidRouteId = "invalid_route_id"
     const response = await deleteHandler({} as NextRequest, {
-      params: { routeId: invalidRouteId },
+      params: Promise.resolve({ routeId: invalidRouteId }),
     })
     const responseBody = await response.json()
 

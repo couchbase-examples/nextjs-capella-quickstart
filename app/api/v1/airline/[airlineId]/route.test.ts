@@ -56,7 +56,7 @@ describe("GET /api/v1/airline/{id}", () => {
 
   it("should respond with status code 200 OK and return airline as object", async () => {
     const response = await getHandler({} as NextRequest, {
-      params: { airlineId: id },
+      params: Promise.resolve({ airlineId: id }),
     })
     const responseBody = await response.json()
 
@@ -71,7 +71,7 @@ describe("GET /api/v1/airline/{id}", () => {
   it("should respond with status code 404 when the airline ID is invalid", async () => {
     const invalidAirlineId = "invalid_airline_id"
     const response = await getHandler({} as NextRequest, {
-      params: { airlineId: invalidAirlineId },
+      params: Promise.resolve({ airlineId: invalidAirlineId }),
     })
     const responseBody = await response.json()
 
@@ -94,7 +94,7 @@ describe("POST /api/v1/airline", () => {
   it("should respond with status code 201 Created and return airline as object", async () => {
     const response = await postHandler(
       { json: async () => newAirline } as NextRequest,
-      { params: { airlineId: id } }
+      { params: Promise.resolve({ airlineId: id }) }
     )
     const responseBody = await response.json()
 
@@ -106,7 +106,7 @@ describe("POST /api/v1/airline", () => {
     const invalidAirlineData = { "invalid": "data" }
     const response = await postHandler(
       { json: async () => invalidAirlineData } as NextRequest,
-      { params: { airlineId: id } }
+      { params: Promise.resolve({ airlineId: id }) }
     )
     const responseBody = await response.json()
 
@@ -120,7 +120,7 @@ describe("POST /api/v1/airline", () => {
 
     const response = await postHandler(
       { json: async () => newAirline } as NextRequest,
-      { params: { airlineId: id } }
+      { params: Promise.resolve({ airlineId: id }) }
     )
     const responseBody = await response.json()
 
@@ -161,7 +161,7 @@ describe("PUT /api/v1/airline/{id}", () => {
 
     const response = await putHandler(
       { json: async () => updatedAirline } as NextRequest,
-      { params: { airlineId: id } }
+      { params: Promise.resolve({ airlineId: id }) }
     )
 
     expect(response.status).toBe(200);
@@ -176,7 +176,7 @@ describe("PUT /api/v1/airline/{id}", () => {
     const invalidAirlineData = { "invalid": "data" }
     const response = await putHandler(
       { json: async () => invalidAirlineData } as NextRequest,
-      { params: { airlineId: id } }
+      { params: Promise.resolve({ airlineId: id }) }
     )
     const responseBody = await response.json()
 
@@ -204,7 +204,7 @@ describe("DELETE /api/v1/airline/{id}", () => {
 
   it("should respond with status code 202 Accepted", async () => {
     const response = await deleteHandler({} as NextRequest, {
-      params: { airlineId: id },
+      params: Promise.resolve({ airlineId: id }),
     })
 
     expect(response.status).toBe(202)
@@ -213,7 +213,7 @@ describe("DELETE /api/v1/airline/{id}", () => {
   it("should respond with status code 404 Not Found when the airline ID is invalid", async () => {
     const invalidAirlineId = "invalid_airline_id"
     const response = await deleteHandler({} as NextRequest, {
-      params: { airlineId: invalidAirlineId },
+      params: Promise.resolve({ airlineId: invalidAirlineId }),
     })
     const responseBody = await response.json()
 
