@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { QueryResult, QueryScanConsistency } from "couchbase"
+import { QueryResult } from "couchbase"
 
 import { getDatabase } from "@/lib/couchbase-connection"
 import { TAirline } from "@/app/models/Airline"
@@ -63,7 +63,6 @@ export async function GET(req: NextRequest) {
         LIMIT: number
         OFFSET: number
       }
-      scanConsistency: QueryScanConsistency
     }
 
     let options: QueryOptions
@@ -97,7 +96,6 @@ export async function GET(req: NextRequest) {
           LIMIT: Number(limit),
           OFFSET: Number(offset),
         },
-        scanConsistency: QueryScanConsistency.RequestPlus,
       }
     }
 

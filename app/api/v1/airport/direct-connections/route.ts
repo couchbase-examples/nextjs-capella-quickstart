@@ -69,7 +69,6 @@ export async function GET(req: NextRequest) {
       FROM airport AS airport
       JOIN route AS route ON route.sourceairport = airport.faa
       WHERE airport.faa = $destinationAirportCode AND route.stops = 0
-      ORDER BY route.destinationairport
       LIMIT $LIMIT OFFSET $OFFSET
     `
 
