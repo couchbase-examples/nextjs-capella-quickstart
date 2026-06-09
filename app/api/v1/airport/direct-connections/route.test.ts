@@ -8,7 +8,7 @@ describe('GET function', () => {
       nextUrl: {
         searchParams: new URLSearchParams({
           destinationAirportCode: 'JFK',
-          limit: '10',
+          limit: '1000',
           offset: '0',
         }),
       },

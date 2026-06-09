@@ -1,5 +1,5 @@
 import { getDatabase } from '@/lib/couchbase-connection';
-import { SearchQuery, SearchResult } from 'couchbase';
+import { QueryResult, QueryScanConsistency, SearchQuery, SearchResult } from 'couchbase';
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
@@ -58,15 +58,45 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'name query parameter is required' }, { status: 400 });
     }
 
-    const result: SearchResult = await cluster.searchQuery('hotel_search', SearchQuery.prefix(name.toLowerCase()).field('name'), {
-      limit: limit,
-      skip: offset,
-      fields: ['*']
-    });
+    try {
+      const result: SearchResult = await cluster.searchQuery('hotel_search', SearchQuery.prefix(name.toLowerCase()).field('name'), {
+        limit: limit,
+        skip: offset,
+        fields: ['*']
+      });
 
-    const hotels = result.rows.map((row) => row.fields);
+      const hotels = result.rows.map((row) => row.fields);
 
-    return NextResponse.json(hotels, { status: 200 });
+      return NextResponse.json(hotels, { status: 200 });
+    } catch (searchError) {
+      const { scope } = await getDatabase();
+      const result: QueryResult = await scope.query(
+        `
+          SELECT hotel.name,
+                 hotel.title,
+                 hotel.description,
+                 hotel.country,
+                 hotel.city,
+                 hotel.state
+          FROM hotel AS hotel
+          WHERE LOWER(hotel.name) LIKE $NAME
+          ORDER BY hotel.name
+          LIMIT $LIMIT OFFSET $OFFSET
+        `,
+        {
+          parameters: {
+            NAME: `%${name.toLowerCase()}%`,
+            LIMIT: limit,
+            OFFSET: offset,
+          },
+          scanConsistency: QueryScanConsistency.RequestPlus,
+        }
+      );
+
+      const hotels = result.rows;
+
+      return NextResponse.json(hotels, { status: 200 });
+    }
   } catch (error) {
     return NextResponse.json(
       { error: 'Internal server error', message: (error as Error).message },

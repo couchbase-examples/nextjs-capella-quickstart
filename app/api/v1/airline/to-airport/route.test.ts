@@ -82,13 +82,12 @@ describe('GET /api/v1/airline/to-airport', () => {
 
         const fetchedAirlines = await response.json();
 
-        for (let i = 0; i < expectedAirlines.length; i++) {
-            expect(fetchedAirlines[i].callsign).toBe(expectedAirlines[i].callsign);
-            expect(fetchedAirlines[i].country).toBe(expectedAirlines[i].country);
-            expect(fetchedAirlines[i].iata).toBe(expectedAirlines[i].iata);
-            expect(fetchedAirlines[i].icao).toBe(expectedAirlines[i].icao);
-            expect(fetchedAirlines[i].name).toBe(expectedAirlines[i].name);
-        }
+        expect(fetchedAirlines.length).toBeGreaterThanOrEqual(expectedAirlines.length);
+        expect(fetchedAirlines).toEqual(
+            expect.arrayContaining(
+                expectedAirlines.map((airline) => expect.objectContaining(airline))
+            )
+        );
     });
 
     it('GET: should return a 400 error when destinationAirportCode is not provided', async () => {

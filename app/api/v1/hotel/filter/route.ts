@@ -1,7 +1,7 @@
 // app/api/v1/hotel/route.ts
 import { THotel } from '@/app/models/Hotel';
 import { getDatabase } from '@/lib/couchbase-connection';
-import { SearchQuery, SearchResult } from 'couchbase';
+import { QueryResult, QueryScanConsistency, SearchQuery, SearchResult } from 'couchbase';
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
@@ -103,31 +103,92 @@ export async function GET(req: NextRequest) {
             queries.push(SearchQuery.match(searchParams.state).field('state'));
         }
 
-        const conjunctsQuery = SearchQuery.conjuncts(...queries);
         const offset = parseInt(searchParams.offset ?? '0');
         const limit = parseInt(searchParams.limit ?? '10');
+
+        if (queries.length === 0) {
+            return NextResponse.json([], { status: 200 });
+        }
+
+        const conjunctsQuery = SearchQuery.conjuncts(...queries);
         const options = {
             limit,
             skip: offset,
             fields: ['*'],
         };
 
-        const { cluster } = await getDatabase();
-        const result: SearchResult = await cluster.searchQuery('hotel_search', conjunctsQuery, options);
+        try {
+            const { cluster } = await getDatabase();
+            const result: SearchResult = await cluster.searchQuery('hotel_search', conjunctsQuery, options);
 
-        const hotels: THotel[] = result.rows.map((row) => {
-            return {
-                id: row.id,
-                name: row.fields?.name,
-                title: row.fields?.title,
-                description: row.fields?.description,
-                country: row.fields?.country,
-                city: row.fields?.city,
-                state: row.fields?.state,
+            const hotels: THotel[] = result.rows.map((row) => {
+                return {
+                    id: row.id,
+                    name: row.fields?.name,
+                    title: row.fields?.title,
+                    description: row.fields?.description,
+                    country: row.fields?.country,
+                    city: row.fields?.city,
+                    state: row.fields?.state,
+                };
+            });
+
+            return NextResponse.json(hotels, { status: 200 });
+        } catch (searchError) {
+            const predicates: string[] = [];
+            const parameters: Record<string, string | number> = {
+                LIMIT: limit,
+                OFFSET: offset,
             };
-        });
 
-        return NextResponse.json(hotels, { status: 200 });
+            if (searchParams.name) {
+                predicates.push('LOWER(hotel.name) LIKE $NAME');
+                parameters.NAME = `%${searchParams.name.toLowerCase()}%`;
+            }
+            if (searchParams.title) {
+                predicates.push('LOWER(hotel.title) LIKE $TITLE');
+                parameters.TITLE = `%${searchParams.title.toLowerCase()}%`;
+            }
+            if (searchParams.description) {
+                predicates.push('LOWER(hotel.description) LIKE $DESCRIPTION');
+                parameters.DESCRIPTION = `%${searchParams.description.toLowerCase()}%`;
+            }
+            if (searchParams.country) {
+                predicates.push('hotel.country = $COUNTRY');
+                parameters.COUNTRY = searchParams.country;
+            }
+            if (searchParams.city) {
+                predicates.push('hotel.city = $CITY');
+                parameters.CITY = searchParams.city;
+            }
+            if (searchParams.state) {
+                predicates.push('hotel.state = $STATE');
+                parameters.STATE = searchParams.state;
+            }
+
+            const { scope } = await getDatabase();
+            const result: QueryResult = await scope.query(
+                `
+                  SELECT META(hotel).id AS id,
+                         hotel.name,
+                         hotel.title,
+                         hotel.description,
+                         hotel.country,
+                         hotel.city,
+                         hotel.state
+                  FROM hotel AS hotel
+                  WHERE ${predicates.join(' AND ')}
+                  ORDER BY hotel.name
+                  LIMIT $LIMIT OFFSET $OFFSET
+                `,
+                {
+                    parameters,
+                    scanConsistency: QueryScanConsistency.RequestPlus,
+                }
+            );
+
+            return NextResponse.json(result.rows, { status: 200 });
+        }
     } catch (error) {
         return NextResponse.json(
             { error: 'Internal server error', message: (error as Error).message },
