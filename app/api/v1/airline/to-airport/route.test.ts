@@ -3,14 +3,29 @@ import { describe, expect, it } from "vitest";
 import { GET } from './route';
 import { TAirline } from '@/app/models/Airline';
 
+// The route's SQL++ query has no ORDER BY, so Couchbase makes no guarantee
+// about row order: it follows whatever the query plan produces and shifts when
+// indexes are rebuilt or when the route collection gains/loses documents.
+// Compare on identity fields only, and without depending on position.
+const identity = ({ callsign, country, iata, icao, name }: TAirline) => ({
+    callsign,
+    country,
+    iata,
+    icao,
+    name,
+});
+
 describe('GET /api/v1/airline/to-airport', () => {
 
     it('GET: should return a list of airlines flying to a destination airport', async () => {
+        // Without an ORDER BY the LIMIT window is an arbitrary slice, so a
+        // limit large enough to cover every airline serving MRS is what makes
+        // "these airlines are in the results" a stable assertion.
         const req = {
             nextUrl: {
                 searchParams: new URLSearchParams({
                     destinationAirportCode: 'MRS',
-                    limit: '10',
+                    limit: '100',
                     offset: '0',
                 }),
             },
@@ -80,15 +95,12 @@ describe('GET /api/v1/airline/to-airport', () => {
         expect(response.status).toBe(200);
         expect(response.headers.get('Content-Type')).toBe('application/json');
 
-        const fetchedAirlines = await response.json();
+        const fetchedAirlines: TAirline[] = await response.json();
 
-        for (let i = 0; i < expectedAirlines.length; i++) {
-            expect(fetchedAirlines[i].callsign).toBe(expectedAirlines[i].callsign);
-            expect(fetchedAirlines[i].country).toBe(expectedAirlines[i].country);
-            expect(fetchedAirlines[i].iata).toBe(expectedAirlines[i].iata);
-            expect(fetchedAirlines[i].icao).toBe(expectedAirlines[i].icao);
-            expect(fetchedAirlines[i].name).toBe(expectedAirlines[i].name);
-        }
+        expect(fetchedAirlines.length).toBeGreaterThanOrEqual(expectedAirlines.length);
+        expect(fetchedAirlines.map(identity)).toEqual(
+            expect.arrayContaining(expectedAirlines.map(identity))
+        );
     });
 
     it('GET: should return a 400 error when destinationAirportCode is not provided', async () => {

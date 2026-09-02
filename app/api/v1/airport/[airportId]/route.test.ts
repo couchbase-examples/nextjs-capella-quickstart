@@ -226,22 +226,33 @@ describe("PUT /api/v1/airport/{id}", () => {
 })
 
 describe("DELETE /api/v1/airport/{id}", () => {
-  insertAirport("airport_delete", {
-    airportname: "Test Airport",
-    city: "Test City",
-    country: "Test Country",
-    faa: "",
-    icao: "Test LFAG",
-    tz: "Test Europe/Paris",
-    geo: {
-      lat: 49.868547,
-      lon: 3.029578,
-      alt: 295.0,
-    },
+  const id = "airport_delete"
+
+  // Insert airport before each test. This must be awaited inside a hook: an
+  // unawaited call in the describe body races with the delete handler and can
+  // land after it, leaving the document behind in the shared bucket.
+  beforeEach(async () => {
+    await insertAirport(id, {
+      airportname: "Test Airport",
+      city: "Test City",
+      country: "Test Country",
+      faa: "",
+      icao: "Test LFAG",
+      tz: "Test Europe/Paris",
+      geo: {
+        lat: 49.868547,
+        lon: 3.029578,
+        alt: 295.0,
+      },
+    })
+  })
+
+  // Clean up airport after running tests
+  afterEach(async () => {
+    await cleanupAirport(id)
   })
 
   it("it should respond with status code 202 Accepted", async () => {
-    const id = "airport_delete"
     const response = await deleteHandler({} as NextRequest, {
       params: Promise.resolve({ airportId: id }),
     })
