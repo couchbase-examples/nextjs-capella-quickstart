@@ -193,13 +193,22 @@ describe("PUT /api/v1/airline/{id}", () => {
 describe("DELETE /api/v1/airline/{id}", () => {
   const id = "airline_delete"
 
-  // Insert airline before running tests
-  insertAirline(id, {
-    name: "40-Mile Air",
-    iata: "Q5",
-    icao: "MLA",
-    callsign: "MILE-AIR",
-    country: "United States",
+  // Insert airline before each test. This must be awaited inside a hook: an
+  // unawaited call in the describe body races with the delete handler and can
+  // land after it, leaving the document behind in the shared bucket.
+  beforeEach(async () => {
+    await insertAirline(id, {
+      name: "40-Mile Air",
+      iata: "Q5",
+      icao: "MLA",
+      callsign: "MILE-AIR",
+      country: "United States",
+    })
+  })
+
+  // Clean up airline after running tests
+  afterEach(async () => {
+    await cleanupAirline(id)
   })
 
   it("should respond with status code 202 Accepted", async () => {

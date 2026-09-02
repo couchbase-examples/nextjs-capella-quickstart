@@ -238,20 +238,29 @@ describe("PUT /api/v1/route/{id}", () => {
 describe("DELETE /api/v1/route/{id}", () => {
   const id = "route_delete"
 
-  // Insert route before running tests
-  insertRoute(id, {
-    airline: "AF",
-    airlineid: "airline_137",
-    sourceairport: "TLV",
-    destinationairport: "MRS",
-    stops: 0,
-    equipment: "320",
-    schedule: [
-      { day: 0, utc: "10:13:00", flight: "AF198" },
-      { day: 0, utc: "19:14:00", flight: "AF547" },
-      // Add more schedule items as needed
-    ],
-    distance: 2881.617376098415,
+  // Insert route before each test. This must be awaited inside a hook: an
+  // unawaited call in the describe body races with the delete handler and can
+  // land after it, leaving the document behind in the shared bucket.
+  beforeEach(async () => {
+    await insertRoute(id, {
+      airline: "AF",
+      airlineid: "airline_137",
+      sourceairport: "TLV",
+      destinationairport: "MRS",
+      stops: 0,
+      equipment: "320",
+      schedule: [
+        { day: 0, utc: "10:13:00", flight: "AF198" },
+        { day: 0, utc: "19:14:00", flight: "AF547" },
+        // Add more schedule items as needed
+      ],
+      distance: 2881.617376098415,
+    })
+  })
+
+  // Clean up route after running tests
+  afterEach(async () => {
+    await cleanupRoute(id)
   })
 
   it("should respond with status code 202 Accepted", async () => {
