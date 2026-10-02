@@ -3,6 +3,7 @@ import { afterAll, afterEach, beforeEach, describe, expect, it } from "vitest"
 
 import { getDatabase } from "@/lib/couchbase-connection"
 import { TRoute } from "@/app/models/Route"
+import { uniqueTestId } from "@/lib/test-utils"
 
 import {
   DELETE as deleteHandler,
@@ -106,7 +107,7 @@ describe("GET /api/v1/route/{id}", () => {
 })
 
 describe("POST /api/v1/route", () => {
-  const routeId = "route_post"
+  const routeId = uniqueTestId("route_post")
   const newRoute: TRoute = {
     airline: "AF",
     airlineid: "airline_137",
@@ -134,7 +135,6 @@ describe("POST /api/v1/route", () => {
   })
 
   it("should respond with status code 400 when the request body is invalid", async () => {
-    const routeId = "route_post"
     const invalidRequestBody = { invalid: "data" }
 
     const response = await postHandler(
@@ -167,7 +167,7 @@ describe("POST /api/v1/route", () => {
 })
 
 describe("PUT /api/v1/route/{id}", () => {
-  const id = "route_put"
+  const id = uniqueTestId("route_put")
 
   // Insert route before running tests
   beforeEach(async () => {
@@ -236,7 +236,7 @@ describe("PUT /api/v1/route/{id}", () => {
 })
 
 describe("DELETE /api/v1/route/{id}", () => {
-  const id = "route_delete"
+  const id = uniqueTestId("route_delete")
 
   // Insert route before each test. This must be awaited inside a hook: an
   // unawaited call in the describe body races with the delete handler and can
