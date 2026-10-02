@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest"
 
 import { getDatabase } from "@/lib/couchbase-connection"
 import { TAirport } from "@/app/models/Airport"
+import { uniqueTestId } from "@/lib/test-utils"
 
 import {
   DELETE as deleteHandler,
@@ -88,7 +89,7 @@ describe("GET /api/v1/airport/{id}", () => {
 })
 
 describe("POST /api/v1/airport/{id}", () => {
-  const airportId = "airport_post"
+  const airportId = uniqueTestId("airport_post")
   const newAirport: TAirport = {
     airportname: "Test Airport",
     city: "Test City",
@@ -159,7 +160,7 @@ describe("POST /api/v1/airport/{id}", () => {
 })
 
 describe("PUT /api/v1/airport/{id}", () => {
-  const id = "airport_put"
+  const id = uniqueTestId("airport_put")
 
   beforeEach(async () => {
     await insertAirport(id, {
@@ -226,7 +227,7 @@ describe("PUT /api/v1/airport/{id}", () => {
 })
 
 describe("DELETE /api/v1/airport/{id}", () => {
-  const id = "airport_delete"
+  const id = uniqueTestId("airport_delete")
 
   // Insert airport before each test. This must be awaited inside a hook: an
   // unawaited call in the describe body races with the delete handler and can
