@@ -17,4 +17,13 @@ updates:
     versioning-strategy: increase-if-necessary
     labels:
       - "dependencies"
-      - "npm"
+    ignore:
+      # eslint-config-next 16.x pulls in eslint-plugin-react, -import and
+      # -jsx-a11y, which only support eslint <=9 (eslint 10 fails npm install
+      # and crashes eslint-plugin-import rules). Revisit once they support 10.
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      # typescript-eslint 8.x requires typescript <6.1.0, so TS 6.1+/7 fails
+      # npm install. Revisit when typescript-eslint widens its peer range.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
