@@ -39,14 +39,10 @@ describe('GET function', () => {
     expect(Array.isArray(fetchedAirlines)).toBe(true);
     expect(fetchedAirlines.length).toBeGreaterThan(0);
 
+    // Don't assert on airline_10 ("40-Mile Air"): the CI cluster is shared
+    // with other tutorials that overwrite it (e.g. netlify-tutorial's
+    // put_airline renames it to "40-Mile-Air").
     const expectedAirlines:TAirline[] = [
-      {
-        callsign: 'MILE-AIR',
-        country: 'United States',
-        iata: 'Q5',
-        icao: 'MLA',
-        name: '40-Mile Air',
-      },
       {
         callsign: 'TXW',
         country: 'United States',

@@ -46,7 +46,11 @@ afterAll(async () => {
 })
 
 describe("GET /api/v1/airline/{id}", () => {
-  const id = "airline_10"
+  // Seed our own document instead of reading the travel-sample "airline_10".
+  // The CI cluster is shared with other tutorials, and some of them write to
+  // airline_10 (e.g. netlify-tutorial's put_airline renames it to
+  // "40-Mile-Air"), so its contents are not stable.
+  const id = uniqueTestId("airline_get")
   const expectedAirline: TAirline = {
     name: "40-Mile Air",
     iata: "Q5",
@@ -54,6 +58,14 @@ describe("GET /api/v1/airline/{id}", () => {
     callsign: "MILE-AIR",
     country: "United States",
   }
+
+  beforeEach(async () => {
+    await insertAirline(id, expectedAirline)
+  })
+
+  afterEach(async () => {
+    await cleanupAirline(id)
+  })
 
   it("should respond with status code 200 OK and return airline as object", async () => {
     const response = await getHandler({} as NextRequest, {
