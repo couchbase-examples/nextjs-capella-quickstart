@@ -42,66 +42,48 @@ interface DbConnection {
   hotelCollection: couchbase.Collection
 }
 
-let cachedDbConnection: DbConnection | null = null
-
-declare const global: {
-  couchbase?: {
-    conn: couchbase.Cluster | null
-  }
-}
-
 /**
- * Global is used here to maintain a cached connection across hot reloads
- * in development. This prevents connections growing exponentially
- * during API Route usage.
+ * The connection is memoized as a single promise on `globalThis`, so:
+ * - concurrent first requests share one `couchbase.connect` call instead of
+ *   each opening their own cluster connection, and
+ * - the connection survives module re-evaluation during Next.js hot reloads
+ *   in development, preventing connections from growing during API route use.
+ * If connecting fails, the memo is cleared so the next call can retry.
  */
-let cached: { conn: couchbase.Cluster | null } = global.couchbase ?? {
-  conn: null,
+const globalForCouchbase = globalThis as typeof globalThis & {
+  couchbaseConnection?: Promise<DbConnection>
 }
 
-async function createCouchbaseCluster(): Promise<couchbase.Cluster> {
-  if (cached.conn) {
-    return cached.conn
-  }
+async function connectToDatabase(): Promise<DbConnection> {
   const cluster = await couchbase.connect(DB_CONN_STR, {
     username: DB_USERNAME,
     password: DB_PASSWORD,
     configProfile: "wanDevelopment",
   })
-
-  cached.conn = cluster
-  return cluster
-}
-
-async function connectToDatabase(): Promise<DbConnection> {
-  const cluster = await createCouchbaseCluster()
   const bucket = cluster.bucket(DB_BUCKET_NAME)
   const scope = bucket.scope("inventory")
-  const airlineCollection = scope.collection("airline")
-  const airportCollection = scope.collection("airport")
-  const routeCollection = scope.collection("route")
-  const hotelCollection = scope.collection("hotel")
 
-  const dbConnection: DbConnection = {
+  return {
     cluster,
     bucket,
     scope,
-    airlineCollection,
-    airportCollection,
-    routeCollection,
-    hotelCollection,
+    airlineCollection: scope.collection("airline"),
+    airportCollection: scope.collection("airport"),
+    routeCollection: scope.collection("route"),
+    hotelCollection: scope.collection("hotel"),
   }
-  cachedDbConnection = dbConnection
-  return dbConnection
 }
 
 export function getDatabase(): Promise<DbConnection> {
-  if (!cachedDbConnection) {
-    // If connection doesn't exist, create and cache it
-    return connectToDatabase()
+  if (!globalForCouchbase.couchbaseConnection) {
+    globalForCouchbase.couchbaseConnection = connectToDatabase().catch(
+      (error) => {
+        globalForCouchbase.couchbaseConnection = undefined
+        throw error
+      }
+    )
   }
-  // If connection exists, return it
-  return Promise.resolve(cachedDbConnection)
+  return globalForCouchbase.couchbaseConnection
 }
 
 export async function insertFTSIndexes() {
